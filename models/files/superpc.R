@@ -1,5 +1,5 @@
 modelInfo <- list(label = "Supervised Principal Component Analysis",
-                  library = "superpc",
+                  library = "superpc", "survival"
                   type = c('Regression'),
                   parameters = data.frame(parameter = c('threshold', 'n.components'),
                                           class = c('numeric', 'numeric'),
@@ -12,7 +12,7 @@ modelInfo <- list(label = "Supervised Principal Component Analysis",
                                        grid$threshold == max(grid$threshold))
                     loop <- grid[largest,, drop = FALSE]
                     submodels <- list(grid[-largest,, drop = FALSE])
-                    list(loop = loop, submodels = submodels)           
+                    list(loop = loop, submodels = submodels)
                   },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     out <- superpc.train(list(x = t(x), y = y),
@@ -28,12 +28,12 @@ modelInfo <- list(label = "Supervised Principal Component Analysis",
                                            newdata = list(x=t(newdata)),
                                            n.components = modelFit$tuneValue$n.components,
                                            threshold = modelFit$tuneValue$threshold)$v.pred.1df
-                    
+
                     if(!is.null(submodels))
                     {
                       tmp <- vector(mode = "list", length = nrow(submodels) + 1)
                       tmp[[1]] <- out
-                      
+
                       for(j in seq(along = submodels$threshold))
                       {
                         tmp[[j+1]] <- superpc.predict(modelFit,
@@ -44,7 +44,7 @@ modelInfo <- list(label = "Supervised Principal Component Analysis",
                       }
                       out <- tmp
                     }
-                    
+
                     out
                   },
                   prob = NULL,
