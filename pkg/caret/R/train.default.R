@@ -8,8 +8,8 @@ train.default <- function(x, y,
                           preProcess = NULL,
                           ...,
                           weights = NULL,
-                          metric = ifelse(is.factor(y), "Accuracy", "RMSE"), #TODO add new measure metric for Surv object
-                          maximize = ifelse(metric == "RMSE", FALSE, TRUE),  #TODO add new one for Surv
+                          metric = ifelse(is.factor(y), "Accuracy", ifelse(is.Surv(y), "Concordance", "RMSE"), #TODO add new measure metric for Surv object
+                          maximize = ifelse(metric == "RMSE", FALSE, TRUE),
                           trControl = trainControl(),
                           tuneGrid = NULL,
                           tuneLength = 3)
@@ -35,7 +35,9 @@ train.default <- function(x, y,
   paramNames <- as.character(models$parameters$parameter)
 
   funcCall <- match.call(expand.dots = TRUE)
-  modelType <- if(is.factor(y)) "Classification"  else "Regression" #TODO add is.Surv() function
+  modelType <- if(is.factor(y)) "Classification"
+                else if(is.Surv(y)) "Survival"
+                else "Regression"
   if(!(modelType %in% models$type)) stop(paste("wrong model type for", tolower(modelType)))
 
   if(grepl("^svm", method) & grepl("String$", method)) {
@@ -51,9 +53,10 @@ train.default <- function(x, y,
   }
 
   if(any(class(x) == "data.table")) x <- as.data.frame(x)
-  stopifnot(length(y) > 1)           #TODO add length for Surv object
+  row_y <- if(is.Surv(y)) nrow(y) else length(y)
+  stopifnot(row_y > 1)
   stopifnot(nrow(x) > 1)
-  stopifnot(nrow(x) == length(y))    #TODO add length for Surv object
+  stopifnot(nrow(x) == row_y)
 
   ## TODO add check method and execute here
 
@@ -80,7 +83,7 @@ train.default <- function(x, y,
                     paste(make.names(classLevels), collapse = ", ")))
     }
 
-    if(metric %in% c("RMSE", "Rsquared"))  # TODO add metric for Surv object
+    if(metric %in% c("RMSE", "Rsquared", "Concordance"))
       stop(paste("Metric", metric, "not applicable for classification models"))
     if(trControl$classProbs)
     {
@@ -91,20 +94,27 @@ train.default <- function(x, y,
       }
     }
   } else {
-    if(metric %in% c("Accuracy", "Kappa")) # TODO add metric for Surv object
+    if(is.Surv(y)){
+      if(metric %in% c("Accuracy", "Kappa", "RMSE", "Rsquared"))
+        stop(paste("Metric", metric, "not applicable for survival models"))
+    }else{
+    if(metric %in% c("Accuracy", "Kappa", "Concordance"))
       stop(paste("Metric", metric, "not applicable for regression models"))
+    }
     classLevels <- NA
     if(trControl$classProbs)
     {
-      warning("cannnot compute class probabilities for regression")  # TODO change to the paste(, modelType)
+      warning(paste("cannnot compute class probabilities for", tolower(modelType)))
       trControl$classProbs <- FALSE
     }
   }
 
-  if(trControl$method == "oob" & !(method %in% c("rf", "treebag", "cforest", "bagEarth", "bagFDA", "parRF")))
-    stop("for oob error rates, model bust be one of: rf, cforest, bagEarth, bagFDA or treebag") #TODO add randomSurvivalForest
+  if(trControl$method == "oob" & !(method %in% c("rf", "treebag", "cforest", "bagEarth", "bagFDA", "parRF", "randomSurvivalForest")))
+    stop("for oob error rates, model bust be one of: rf, cforest, bagEarth, bagFDA, randomSurvivalForest or treebag")
 
-  ## If they don't exist, make the data partitions for the resampling iterations. TODO maybe add index for Surv object?
+  ## If they don't exist, make the data partitions for the resampling iterations.
+  ## TODO check all those functions when y is Surv object
+  ## TODO check pec package to handle this
   if(is.null(trControl$index)) {
     trControl$index <- switch(tolower(trControl$method),
                               oob = NULL,
@@ -147,10 +157,9 @@ train.default <- function(x, y,
   if(trControl$method != "oob" & is.null(names(trControl$index)))    names(trControl$index)    <- prettySeq(trControl$index)
   if(trControl$method != "oob" & is.null(names(trControl$indexOut))) names(trControl$indexOut) <- prettySeq(trControl$indexOut)
 
-#   if(!is.data.frame(x)) x <- as.data.frame(x)
 
   ## Gather all the pre-processing info. We will need it to pass into the grid creation
-  ## code so that there is a concorance between the data used for modeling and grid creation
+  ## code so that there is a concordance between the data used for modeling and grid creation
   if(!is.null(preProcess))
   {
     ppOpt <- list(options = preProcess)

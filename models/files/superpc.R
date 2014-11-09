@@ -1,6 +1,6 @@
 modelInfo <- list(label = "Supervised Principal Component Analysis",
-                  library = "superpc", "survival"
-                  type = c('Regression'),
+                  library = "superpc",
+                  type = c('Regression', "Survival"),
                   parameters = data.frame(parameter = c('threshold', 'n.components'),
                                           class = c('numeric', 'numeric'),
                                           label = c('Threshold', '#Components')),
