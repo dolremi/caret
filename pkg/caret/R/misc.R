@@ -20,19 +20,20 @@ subsemble_index <- function(y, J = 2, V = 10){
     model_index   <- c(model_index,   all_index[[i]]$model)
     holdout_index <- c(holdout_index, all_index[[i]]$holdout)
   }
-  list(model = model_index, holdout = holdout_index)  
+  list(model = model_index, holdout = holdout_index)
 }
 
 well_numbered <- function(prefix, items) {
   paste0(prefix, gsub(" ", "0", format(1:items)))
 }
 
-
+## TODO modify evalSummaryFunction to handle Surv object
 evalSummaryFunction <- function(y, wts, ctrl, lev, metric, method) {
+  numRow <- ifelse(is.Surv(y), nrow(y), length(y))
   ## get phoney performance to obtain the names of the outputs
-  testOutput <- data.frame(pred = sample(y, min(10, length(y))),
-                           obs = sample(y, min(10, length(y))))
-  
+  testOutput <- data.frame(pred = sample(y, min(10, numRow)),
+                           obs = sample(y, min(10, numRow)))
+
   if(ctrl$classProbs)
   {
     for(i in seq(along = lev)) testOutput[, lev[i]] <- runif(nrow(testOutput))
@@ -59,7 +60,7 @@ model2method <- function(x)
 {
   ## There are some disconnecs between the object class and the
   ## method used by train.
-  
+
   switch(x,
          randomForest = "rf",
          rvm = "rvmRadial",
@@ -92,7 +93,7 @@ gamFormula <- function(data, smoother = "s", cut = 8, y = "y")
 {
   nzv <- nearZeroVar(data)
   if(length(nzv) > 0) data <- data[, -nzv, drop = FALSE]
-  
+
   numValues <- apply(data, 2, function(x) length(unique(x)))
   prefix <- rep("", ncol(data))
   prefix[numValues > cut] <- paste(smoother, "(", sep = "")
@@ -130,7 +131,7 @@ ipredStats <- function(x)
   requireNamespace("e1071", quietly = TRUE)
   ## error check
   if(is.null(x$X)) stop("to get OOB stats, keepX must be TRUE when calling the bagging function")
-  
+
   foo <- function(object, y, x)
     {
       holdY <- y[-object$bindx]
@@ -142,7 +143,7 @@ ipredStats <- function(x)
           out <- c(
                    mean(holdY == tmp),
                    e1071::classAgreement(table(holdY, tmp))$kappa)
-          
+
         } else {
           tmp <- predict(object$btree, x[-object$bindx,])
 
@@ -150,7 +151,7 @@ ipredStats <- function(x)
                    sqrt(mean((tmp - holdY)^2, na.rm = TRUE)),
                    cor(holdY, tmp, use = "pairwise.complete.obs")^2)
         }
-      out    
+      out
     }
   eachStat <- lapply(x$mtrees, foo, y = x$y, x = x$X)
   eachStat <- matrix(unlist(eachStat), nrow = length(eachStat[[1]]))
@@ -173,17 +174,17 @@ rfStats <- function(x)
                     e1071::classAgreement(x$confusion[,-dim(x$confusion)[2]])[["kappa"]])
                 })
   names(out) <- if(x$type == "regression") c("RMSE", "Rsquared") else c("Accuracy", "Kappa")
-  out              
+  out
 }
 
 cforestStats <- function(x)
 {
   library(party)
-  
+
   obs <- x@data@get("response")[,1]
   pred <- predict(x,  x@data@get("input"), OOB = TRUE)
   postResample(pred, obs)
-  
+
 
 }
 
@@ -208,10 +209,10 @@ defaultSummary <- function(data, lev = NULL, model = NULL)
     postResample(data[,"pred"], data[,"obs"])
   }
 
-twoClassSummary <- function (data, lev = NULL, model = NULL) 
+twoClassSummary <- function (data, lev = NULL, model = NULL)
 {
   require(pROC)
-  if (!all(levels(data[, "pred"]) == levels(data[, "obs"]))) 
+  if (!all(levels(data[, "pred"]) == levels(data[, "obs"])))
     stop("levels of observed and predicted data do not match")
   rocObject <- try(pROC::roc(data$obs, data[, lev[1]]), silent = TRUE)
   rocAUC <- if(class(rocObject)[1] == "try-error") NA else rocObject$auc
@@ -239,11 +240,11 @@ partRuleSummary <- function(x)
     names(numClass) <- classes
     for(i in seq(along = classes))
       numClass[i] <- sum(grepl(paste(":", classes[i], sep = " "), classPred))
-    
+
     list(varUsage = varUsage,
          numCond = length(conditions),
          classes = numClass)
-    
+
   }
 
 ripperRuleSummary <- function(x)
@@ -264,11 +265,11 @@ ripperRuleSummary <- function(x)
     names(numClass) <- classes
     for(i in seq(along = classes))
       numClass[i] <- sum(grepl(paste(x$terms[[2]], "=", classes[i], sep = ""), conditions))
-    
+
     list(varUsage = varUsage,
          numCond = length(conditions),
          classes = numClass)
-    
+
   }
 
 ##########################################################################################################
@@ -287,7 +288,7 @@ splitIndicies <- function(n, k)
 
 
 repList <- function(x, times = 3, addIndex = FALSE)
-  { 
+  {
     out <- vector(mode = "list", length = times)
     out <- lapply(out, function(a, b) b, b = x)
     if(addIndex) for(i in seq(along = out)) out[[i]]$.index <- i
@@ -327,7 +328,7 @@ smootherFormula <- function(data, smoother = "s", cut = 10, df = 0, span = .5, d
     if(smoother == "rcs")
       {
         suffix[numValues > cut] <- ")"
-      }    
+      }
     rhs <- paste(prefix, names(numValues), suffix, sep = "")
     rhs <- paste(rhs, collapse = "+")
     form <- as.formula(paste(y, rhs, sep = "~"))
@@ -351,7 +352,7 @@ makeTable <- function(x)
     data.frame(method = as.character(x$model)[1],
                Package = cranRef(as.character(x$Package)[1]),
                Parameters = params)
-    
+
 
   }
 
