@@ -301,11 +301,13 @@ train.default <- function(x, y,
       }
     }
 
-
+    ## TODO check evalSummaryFunction and modify it for Surv Object
     ## run some data thru the sumamry function and see what we get
     if(trControl$method == "oob")
     {
-      perfNames <- if(modelType == "Regression") c("RMSE", "Rsquared") else  c("Accuracy", "Kappa")
+      perfNames <- if(modelType == "Regression") c("RMSE", "Rsquared")
+                    else if(modelType == "Classification")  c("Accuracy", "Kappa")
+                    else c("Concordance")
     } else {
       testSummary <- evalSummaryFunction(y, wts = weights, ctrl = trControl,
                                          lev = classLevels, metric = metric,
