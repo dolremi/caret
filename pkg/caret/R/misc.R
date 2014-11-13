@@ -29,7 +29,7 @@ well_numbered <- function(prefix, items) {
 
 ## TODO modify evalSummaryFunction to handle Surv object
 evalSummaryFunction <- function(y, wts, ctrl, lev, metric, method) {
-  numRow <- ifelse(is.Surv(y), nrow(y), length(y))
+  numRow <- if(is.Surv(y)) nrow(y) else length(y)
   ## get phoney performance to obtain the names of the outputs
   testOutput <- data.frame(pred = sample(y, min(10, numRow)),
                            obs = sample(y, min(10, numRow)))
