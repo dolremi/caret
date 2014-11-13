@@ -301,7 +301,6 @@ train.default <- function(x, y,
       }
     }
 
-    ## TODO check evalSummaryFunction and modify it for Surv Object
     ## run some data thru the sumamry function and see what we get
     if(trControl$method == "oob")
     {
@@ -327,6 +326,7 @@ train.default <- function(x, y,
                     sep = ""))
     }
 
+    ## TODO check what TrainWorkflow does and how to embed pec function into it
     if(trControl$method == "oob"){
       tmp <- oobTrainWorkflow(x = x, y = y, wts = weights,
                               info = trainInfo, method = models,
