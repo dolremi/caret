@@ -27,12 +27,15 @@ well_numbered <- function(prefix, items) {
   paste0(prefix, gsub(" ", "0", format(1:items)))
 }
 
-## TODO modify evalSummaryFunction to handle Surv object
+
 evalSummaryFunction <- function(y, wts, ctrl, lev, metric, method) {
   numRow <- if(is.Surv(y)) nrow(y) else length(y)
   ## get phoney performance to obtain the names of the outputs
-  testOutput <- data.frame(pred = sample(y, min(10, numRow)),
-                           obs = sample(y, min(10, numRow)))
+
+  testOutput <- if(is.Surv(y)) data.frame(pred = y[sample(1:numRow, min(10, numRow))],
+                                          obs = y[sample(1:numRow, min(10, numRow))])
+                else   data.frame(pred = sample(y, min(10, numRow)),
+                                 obs = sample(y, min(10, numRow)))
 
   if(ctrl$classProbs)
   {
