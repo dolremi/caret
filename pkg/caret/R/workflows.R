@@ -43,7 +43,6 @@ expandParameters <- function(fixed, seq)
 
 nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing = FALSE, ...)
 {
-  library(caret)
   loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
@@ -71,7 +70,7 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
   testing <- FALSE
   if(!(length(ctrl$seeds) == 1 && is.na(ctrl$seeds))) set.seed(ctrl$seeds[[iter]][parm])
   
-  library(caret)
+  loadNamespace("caret")
   if(ctrl$verboseIter) progress(printed[parm,,drop = FALSE],
                                 names(resampleIndex), iter)
   
@@ -99,6 +98,7 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
                 obsLevels = lev,
                 pp = ppp,
                 classProbs = ctrl$classProbs,
+                sampling = ctrl$sampling,
                 ...),
     silent = TRUE)
   
@@ -196,6 +196,36 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
   
   ##################################
   
+  if(is.numeric(y)) {
+    if(is.logical(ctrl$predictionBounds) && any(ctrl$predictionBounds)) {
+      if(is.list(predicted)) {
+        predicted <- lapply(predicted, trimPredictions,
+                            mod_type = "Regression",
+                            bounds = ctrl$predictionBounds,
+                            limits = ctrl$yLimits)
+      } else {
+        predicted <- trimPredictions(mod_type = "Regression",
+                                     bounds =  ctrl$predictionBounds,
+                                     limits =  ctrl$yLimit,
+                                     pred = predicted)
+      }
+    } else {
+      if(is.numeric(ctrl$predictionBounds) && any(!is.na(ctrl$predictionBounds))) {
+        if(is.list(predicted)) {
+          predicted <- lapply(predicted, trimPredictions,
+                              mod_type = "Regression",
+                              bounds = ctrl$predictionBounds,
+                              limits = ctrl$yLimits)
+        } else {
+          predicted <- trimPredictions(mod_type = "Regression",
+                                       bounds =  ctrl$predictionBounds,
+                                       limits =  ctrl$yLimit,
+                                       pred = predicted)
+        }
+      }
+    } 
+  }
+  
   if(!is.null(submod))
   {
     ## merge the fixed and seq parameter values together
@@ -204,17 +234,19 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
     
     ## collate the predicitons across all the sub-models
     predicted <- lapply(predicted,
-                        function(x, y, wts, lv) {
+                        function(x, y, wts, lv, rows) {
                           if(!is.factor(x) & is.character(x)) x <- factor(as.character(x), levels = lv)
                           out <- data.frame(pred = x, obs = y, stringsAsFactors = FALSE)
                           if(!is.null(wts)) out$weights <- wts
+                          out$rowIndex <- rows
                           out
                         },
                         y = y[holdoutIndex],
                         wts = wts[holdoutIndex],
-                        lv = lev)
+                        lv = lev,
+                        rows = holdoutIndex)
     if(testing) print(head(predicted))
-    
+
     ## same for the class probabilities
     if(ctrl$classProbs)
     {
@@ -262,6 +294,7 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
     names(tmp)[1] <- "pred"
     if(!is.null(wts)) tmp$weights <- wts[holdoutIndex]
     if(ctrl$classProbs) tmp <- cbind(tmp, probValues)
+    tmp$rowIndex <- holdoutIndex
     
     if(ctrl$savePredictions)
     {
@@ -271,8 +304,9 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
                        all = TRUE)
       tmpPred$Resample <- names(resampleIndex)[iter]
     } else tmpPred <- NULL
-    
+
     ##################################
+    
     thisResample <- ctrl$summaryFunction(tmp,
                                          lev = lev,
                                          model = method)
@@ -338,7 +372,6 @@ nominalTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, tes
 
 looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing = FALSE, ...)
 {
-  library(caret)
   loadNamespace("caret")
   
   ppp <- list(options = ppOpts)
@@ -357,7 +390,7 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
       
       if(!(length(ctrl$seeds) == 1 && is.na(ctrl$seeds))) set.seed(ctrl$seeds[[iter]][parm])
       if(testing) cat("after loops\n")
-      library(caret)
+      loadNamespace("caret")
       if(ctrl$verboseIter) progress(printed[parm,,drop = FALSE],
                                     names(ctrl$index), iter, TRUE)
       if(is.null(info$submodels[[parm]]) || nrow(info$submodels[[parm]]) > 0) {
@@ -372,6 +405,7 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
                          obsLevels = lev,
                          pp = ppp,
                          classProbs = ctrl$classProbs,
+                         sampling = ctrl$sampling,
                          ...)
       
       holdoutIndex <- -unique(ctrl$index[[iter]])
@@ -381,6 +415,36 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
                                       newdata = x[-ctrl$index[[iter]],, drop = FALSE],
                                       preProc = mod$preProc,
                                       param = submod)
+      
+      if(is.numeric(y)) {
+        if(is.logical(ctrl$predictionBounds) && any(ctrl$predictionBounds)) {
+          if(is.list(predicted)) {
+            predicted <- lapply(predicted, trimPredictions,
+                                mod_type = "Regression",
+                                bounds = ctrl$predictionBounds,
+                                limits = ctrl$yLimits)
+          } else {
+            predicted <- trimPredictions(mod_type = "Regression",
+                                         bounds =  ctrl$predictionBounds,
+                                         limits =  ctrl$yLimit,
+                                         pred = predicted)
+          }
+        } else {
+          if(is.numeric(ctrl$predictionBounds) && any(!is.na(ctrl$predictionBounds))) {
+            if(is.list(predicted)) {
+              predicted <- lapply(predicted, trimPredictions,
+                                  mod_type = "Regression",
+                                  bounds = ctrl$predictionBounds,
+                                  limits = ctrl$yLimits)
+            } else {
+              predicted <- trimPredictions(mod_type = "Regression",
+                                           bounds =  ctrl$predictionBounds,
+                                           limits =  ctrl$yLimit,
+                                           pred = predicted)
+            }
+          }
+        } 
+      }
       
       if(testing) print(head(predicted))
       if(ctrl$classProbs)
@@ -399,15 +463,17 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
       {
         ## collate the predictions across all the sub-models
         predicted <- lapply(predicted,
-                            function(x, y, wts, lv) {
+                            function(x, y, wts, lv, rows) {
                               if(!is.factor(x) & is.character(x)) x <- factor(as.character(x), levels = lv)
                               out <- data.frame(pred = x, obs = y, stringsAsFactors = FALSE)
                               if(!is.null(wts)) out$weights <- wts
+                              out$rowIndex <- rows
                               out
                             },
                             y = y[holdoutIndex],
                             wts = wts[holdoutIndex],
-                            lv = lev)
+                            lv = lev,
+                            rows = seq(along = y)[holdoutIndex])
         if(testing) print(head(predicted))
         
         ## same for the class probabilities
@@ -421,7 +487,6 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
         predicted <- cbind(predicted, allParam)
         ## if saveDetails then save and export 'predicted'
       } else {
-        
         if(is.factor(y)) predicted <- factor(as.character(predicted),
                                              levels = lev)
         predicted <-  data.frame(pred = predicted,
@@ -429,6 +494,7 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
                                  stringsAsFactors = FALSE)
         if(!is.null(wts)) predicted$weights <- wts[holdoutIndex]
         if(ctrl$classProbs) predicted <- cbind(predicted, probValues)
+        predicted$rowIndex <- seq(along = y)[holdoutIndex]
         predicted <- cbind(predicted, info$loop[parm,,drop = FALSE])
         
       }
@@ -448,7 +514,7 @@ looTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
 
 oobTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing = FALSE, ...)
 {
-  library(caret)
+  loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
   printed <- format(info$loop)
@@ -458,7 +524,7 @@ oobTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
   if(!is.null(method$library)) pkgs <- c(pkgs, method$library)
   result <- foreach(parm = 1:nrow(info$loop), .packages = pkgs, .combine = "rbind") %op%
 {
-  library(caret)
+  loadNamespace("caret")
   if(ctrl$verboseIter) progress(printed[parm,,drop = FALSE], "", 1, TRUE)
   
   mod <- createModel(x = x,
@@ -469,6 +535,7 @@ oobTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
                      obsLevels = lev,
                      pp = ppp,
                      classProbs = ctrl$classProbs,
+                     sampling = ctrl$sampling,
                      ...)
   
   out <- switch(class(mod$fit)[1],
@@ -488,7 +555,7 @@ oobTrainWorkflow <- function(x, y, wts, info, method, ppOpts, ctrl, lev, testing
 
 nominalSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 {
-  library(caret)
+  loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
   
@@ -503,7 +570,7 @@ nominalSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 {
   if(!(length(ctrl$seeds) == 1 && is.na(ctrl$seeds))) set.seed(ctrl$seeds[iter])
   
-  library(caret)
+  loadNamespace("caret")
   
   if(names(resampleIndex)[iter] != "AllData") {
     modelIndex <- resampleIndex[[iter]]
@@ -563,7 +630,7 @@ nominalSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 
 looSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 {
-  library(caret)
+  loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
   
@@ -576,7 +643,7 @@ looSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 {
   if(!(length(ctrl$seeds) == 1 && is.na(ctrl$seeds))) set.seed(ctrl$seeds[iter])
   
-  library(caret)
+  loadNamespace("caret")
   
   modelIndex <- resampleIndex[[iter]]
   holdoutIndex <- -unique(resampleIndex[[iter]])
@@ -601,7 +668,7 @@ looSbfWorkflow <- function(x, y, ppOpts, ctrl, lev, ...)
 
 nominalRfeWorkflow <- function(x, y, sizes, ppOpts, ctrl, lev, ...)
 {
-  library(caret)
+  loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
   
@@ -614,7 +681,7 @@ nominalRfeWorkflow <- function(x, y, sizes, ppOpts, ctrl, lev, ...)
   `%op%` <- getOper(ctrl$allowParallel && getDoParWorkers() > 1)
   result <- foreach(iter = seq(along = resampleIndex), .combine = "c", .verbose = FALSE, .packages = c("methods", "caret", "plyr"), .errorhandling = "stop") %op%
 {
-  library(caret)
+  loadNamespace("caret")
   
   if(names(resampleIndex)[iter] != "AllData") {
     modelIndex <- resampleIndex[[iter]]
@@ -692,7 +759,7 @@ nominalRfeWorkflow <- function(x, y, sizes, ppOpts, ctrl, lev, ...)
 
 looRfeWorkflow <- function(x, y, sizes, ppOpts, ctrl, lev, ...)
 {
-  library(caret)
+  loadNamespace("caret")
   ppp <- list(options = ppOpts)
   ppp <- c(ppp, ctrl$preProcOptions)
   
@@ -700,7 +767,7 @@ looRfeWorkflow <- function(x, y, sizes, ppOpts, ctrl, lev, ...)
   `%op%` <- getOper(ctrl$allowParallel && getDoParWorkers() > 1)
   result <- foreach(iter = seq(along = resampleIndex), .combine = "c", .verbose = FALSE, .packages = c("methods", "caret"), .errorhandling = "stop") %op%
 {
-  library(caret)
+  loadNamespace("caret")
   
   modelIndex <- resampleIndex[[iter]]
   holdoutIndex <- -unique(resampleIndex[[iter]])

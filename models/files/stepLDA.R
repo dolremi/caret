@@ -5,8 +5,15 @@ modelInfo <- list(label = "Linear Discriminant Analysis with Stepwise Feature Se
                   parameters = data.frame(parameter = c("maxvar", "direction"),
                                           class = c("numeric", "character"),
                                           label = c('Maximum #Variables', 'Search Direction')),
-                  grid = function(x, y, len = NULL) 
-                    data.frame(maxvar = Inf, direction = "both"),
+                  grid = function(x, y, len = NULL, search = "grid") {
+                    if(search == "grid") {
+                      out <- data.frame(maxvar = Inf, direction = "both")
+                    } else {
+                      out <- data.frame(direction  = sample(c("both", "forward", "backward"), size = len, replace = TRUE),
+                                        maxvar = sample(1:ncol(x), size = len, replace = TRUE))
+                    }
+                    out
+                  },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...){
                     out <- stepclass(x, y,
                                      method = "lda",
@@ -29,5 +36,6 @@ modelInfo <- list(label = "Linear Discriminant Analysis with Stepwise Feature Se
                     form[[2]] <- NULL
                     all.vars(form)
                   },
+                  levels = function(x) x$obsLevels,
                   tags = c("Discriminant Analysis", "Feature Selection Wrapper", "Linear Classifier"),
                   sort = function(x) x)

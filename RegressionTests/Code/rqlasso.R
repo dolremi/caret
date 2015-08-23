@@ -1,7 +1,7 @@
 library(caret)
 timestamp <- format(Sys.time(), "%Y_%m_%d_%H_%M")
 
-model <- "GFS.FR.MOGAL"
+model <- "rqlasso"
 
 #########################################################################
 
@@ -30,39 +30,42 @@ testY <- trainX$y
 rctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all")
 rctrl2 <- trainControl(method = "LOOCV")
 rctrl3 <- trainControl(method = "none")
+rctrlR <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
 
 set.seed(849)
-test_reg_cv_model <- train(trainX, trainY, method = "GFS.FR.MOGAL", 
-                           tuneLength = 2,
-                           trControl = rctrl1)
+test_reg_cv_model <- train(trainX, trainY, method = "rqlasso", trControl = rctrl1,
+                           preProc = c("center", "scale"))
 test_reg_pred <- predict(test_reg_cv_model, testX)
+
 
 set.seed(849)
 test_reg_cv_form <- train(y ~ ., data = training, 
-                          method = "GFS.FR.MOGAL", 
-                          tuneLength = 2,
-                          trControl = rctrl1)
+                          method = "rqlasso", trControl = rctrl1,
+                          preProc = c("center", "scale"))
 test_reg_pred_form <- predict(test_reg_cv_form, testX)
 
 set.seed(849)
-test_reg_loo_model <- train(trainX, trainY, method = "GFS.FR.MOGAL", 
-                            tuneLength = 2, trControl = rctrl2)
+test_reg_rand <- train(trainX, trainY, 
+                       method = "rqlasso", 
+                       trControl = rctrlR,
+                       tuneLength = 4,
+                       preProc = c("center", "scale"))
+
+set.seed(849)
+test_reg_loo_model <- train(trainX, trainY, method = "rqlasso", trControl = rctrl2,
+                            preProc = c("center", "scale"))
 
 set.seed(849)
 test_reg_none_model <- train(trainX, trainY, 
-                             method = "GFS.FR.MOGAL", 
+                             method = "rqlasso", 
                              trControl = rctrl3,
-                             tuneGrid = test_reg_cv_model$bestTune,
+                             tuneLength = 1,
                              preProc = c("center", "scale"))
 test_reg_none_pred <- predict(test_reg_none_model, testX)
 
 #########################################################################
 
 test_reg_predictors1 <- predictors(test_reg_cv_model)
-
-#########################################################################
-
-test_reg_imp <- varImp(test_reg_cv_model)
 
 #########################################################################
 

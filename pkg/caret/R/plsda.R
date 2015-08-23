@@ -4,7 +4,7 @@ plsda <- function (x, ...)
 
 
 predict.plsda <- function(object, newdata = NULL, ncomp = NULL, type = "class", ...){
-  requireNamespace("pls", quietly = TRUE)
+  requireNamespaceQuietStop('pls')
   if(is.null(ncomp)) 
     if(!is.null(object$ncomp)) ncomp <- object$ncomp else stop("specify ncomp")
   
@@ -55,7 +55,7 @@ predict.plsda <- function(object, newdata = NULL, ncomp = NULL, type = "class", 
   } else {
     ## Bayes rule
     
-    library(klaR)
+    loadNamespace("klaR")
     tmp <- vector(mode = "list", length = length(ncomp))
     for(i in seq(along = ncomp)) {
       tmp[[i]] <- predict(object$probModel[[ ncomp[i] ]],
@@ -84,7 +84,7 @@ predict.plsda <- function(object, newdata = NULL, ncomp = NULL, type = "class", 
 
 
 plsda.default <- function(x, y, ncomp = 2, probMethod = "softmax", prior = NULL, ...) {
-  requireNamespace("pls", quietly = TRUE)
+  requireNamespaceQuietStop('pls')
   
   funcCall <- match.call(expand.dots = TRUE)
   
@@ -101,19 +101,11 @@ plsda.default <- function(x, y, ncomp = 2, probMethod = "softmax", prior = NULL,
     if(!is.null(prior)) warning("Priors are ignored unless probMethod = \"Bayes\"")
   }
   
-  ## from nnet.formula
-  class.ind <- function(cl) {
-    n <- length(cl)
-    x <- matrix(0, n, length(levels(cl)))
-    x[(1:n) + n * (as.vector(unclass(cl)) - 1)] <- 1
-    dimnames(x) <- list(names(cl), levels(cl))
-    x
-  }
   
   if(is.factor(y)) {
     obsLevels <- levels(y)
     oldY <- y
-    y <- class.ind(y)
+    y <- class2ind(y)
   } else {
     if(is.matrix(y)) {
       test <- apply(y, 1, sum)
@@ -135,7 +127,7 @@ plsda.default <- function(x, y, ncomp = 2, probMethod = "softmax", prior = NULL,
   out$obsLevels <- obsLevels
   out$probMethod <- probMethod
   if(probMethod == "Bayes") {
-    requireNamespace("klaR", quietly = TRUE)
+    requireNamespaceQuietStop('klaR')
     makeModels <- function(x, y, pri) {
       probModel <- klaR::NaiveBayes(x, y, prior = pri, usekernel = TRUE)
       probModel$train <- predict(probModel)$posterior
@@ -181,6 +173,5 @@ print.plsda <- function (x, ...) {
   switch(x$probMethod,
          softmax = cat("\nThe softmax function was used to compute class probabilities.\n"),
          Bayes = cat("\nBayes rule was used to compute class probabilities.\n"))
-  printCall(x$call)
   invisible(x)
 }

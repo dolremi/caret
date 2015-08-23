@@ -11,13 +11,23 @@ testing <- twoClassSim(500, linearVars = 2)
 trainX <- training[, -ncol(training)]
 trainY <- training$Class
 
+seeds <- vector(mode = "list", length = nrow(training) + 1)
+seeds <- lapply(seeds, function(x) 1:20)
+
 cctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all",
                        classProbs = TRUE, 
-                       summaryFunction = twoClassSummary)
+                       summaryFunction = twoClassSummary, 
+                       seeds = seeds)
 cctrl2 <- trainControl(method = "LOOCV",
-                       classProbs = TRUE, summaryFunction = twoClassSummary)
+                       classProbs = TRUE, 
+                       summaryFunction = twoClassSummary, 
+                       seeds = seeds)
 cctrl3 <- trainControl(method = "none",
-                       classProbs = TRUE, summaryFunction = twoClassSummary)
+                       classProbs = TRUE, 
+                       summaryFunction = twoClassSummary,
+                       seeds = seeds)
+cctrlR <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
+
 
 set.seed(849)
 test_class_cv_model <- train(trainX, trainY, 
@@ -43,6 +53,16 @@ test_class_pred <- predict(test_class_cv_model, testing[, -ncol(testing)])
 test_class_prob <- predict(test_class_cv_model, testing[, -ncol(testing)], type = "prob")
 test_class_pred_form <- predict(test_class_cv_form, testing[, -ncol(testing)])
 test_class_prob_form <- predict(test_class_cv_form, testing[, -ncol(testing)], type = "prob")
+
+set.seed(849)
+test_class_rand <- train(trainX, trainY, 
+                         method = "bag", 
+                         trControl = cctrlR,
+                         tuneLength = 4,
+                         preProc = c("center", "scale"),
+                         bagControl = bagControl(fit = ldaBag$fit,
+                                                 predict = ldaBag$pred,
+                                                 aggregate = ldaBag$aggregate))
 
 set.seed(849)
 test_class_loo_model <- train(trainX, trainY, 
@@ -104,10 +124,13 @@ trainY <- training$y
 testX <- trainX[, -ncol(training)]
 testY <- trainX$y 
 
-rctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all",
-                       seed = list(a = 1:9, b = 1:9, c = 1:9, d = 10))
-rctrl2 <- trainControl(method = "LOOCV")
-rctrl3 <- trainControl(method = "none")
+rctrl1 <- trainControl(method = "cv", number = 3, 
+                       returnResamp = "all",
+                       seed = seeds)
+rctrl2 <- trainControl(method = "LOOCV", seed = seeds)
+rctrl3 <- trainControl(method = "none", seed = seeds)
+rctrl4 <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
+
 
 set.seed(849)
 test_reg_cv_model <- train(trainX, trainY, 
@@ -130,6 +153,15 @@ test_reg_cv_form <- train(y ~ ., data = training,
                                                    aggregate = ctreeBag$aggregate))
 
 test_reg_pred_form <- predict(test_reg_cv_form, testX)
+
+set.seed(849)
+test_reg_rand <- train(trainX, trainY, 
+                       method = "bag", 
+                       trControl = rctrl4,
+                       tuneLength = 4,
+                       bagControl = bagControl(fit = ctreeBag$fit,
+                                               predict = ctreeBag$pred,
+                                               aggregate = ctreeBag$aggregate))
 
 set.seed(849)
 test_reg_loo_model <- train(trainX, trainY, 

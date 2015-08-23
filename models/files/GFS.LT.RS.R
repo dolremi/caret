@@ -8,15 +8,23 @@ modelInfo <- list(label = "Genetic Lateral Tuning and Rule Selection of Linguist
                                           label = c('Population Size',
                                                     '# Fuzzy Labels',
                                                     'Max. Generations')),
-                  grid = function(x, y, len = NULL)
-                    expand.grid(popu.size = 10*(1:len),      
-                                num.labels = 1+(1:len)*2,
-                                max.gen = 10),
+                  grid = function(x, y, len = NULL, search = "grid"){
+                    if(search == "grid") {
+                      out <- expand.grid(popu.size = 10*(1:len),      
+                                         num.labels = 1+(1:len)*2,
+                                         max.gen = 10)
+                    } else {
+                      out <- data.frame(max.gen = sample(1:20, size = len, replace = TRUE),
+                                        popu.size = sample(seq(2, 20, by = 2), size = len, replace = TRUE),
+                                        num.labels = sample(2:20, size = len, replace = TRUE))
+                    }
+                    out
+                  }, 
                   loop = NULL,
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) { 
-                    args <- list(data.train = cbind(x, y),
+                    args <- list(data.train = as.matrix(cbind(x, y)),
                                  method.type = "GFS.LT.RS")
-                    args$range.data <- apply(args$data.train, 2, range)
+                    args$range.data <- apply(args$data.train, 2, extendrange)
                     
                     theDots <- list(...)
                     if(any(names(theDots) == "control")) {

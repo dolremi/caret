@@ -20,7 +20,7 @@ subsemble_index <- function(y, J = 2, V = 10){
     model_index   <- c(model_index,   all_index[[i]]$model)
     holdout_index <- c(holdout_index, all_index[[i]]$holdout)
   }
-  list(model = model_index, holdout = holdout_index)  
+  list(model = model_index, holdout = holdout_index)
 }
 
 well_numbered <- function(prefix, items) {
@@ -29,10 +29,19 @@ well_numbered <- function(prefix, items) {
 
 
 evalSummaryFunction <- function(y, wts, ctrl, lev, metric, method) {
+  n <- if(class(y)[1] == "Surv") nrow(y) else length(y)
+  ## sample doesn't work for Surv objects
+  if(class(y)[1] != "Surv") {
+    pred_samp <- sample(y, min(10, n))
+    obs_samp <- sample(y, min(10, n))
+  } else {
+    pred_samp <- y[sample(1:n, min(10, n)), "time"]
+    obs_samp <- y[sample(1:n, min(10, n)),]    
+  }
+
   ## get phoney performance to obtain the names of the outputs
-  testOutput <- data.frame(pred = sample(y, min(10, length(y))),
-                           obs = sample(y, min(10, length(y))))
-  
+  testOutput <- data.frame(pred = pred_samp, obs = obs_samp)
+
   if(ctrl$classProbs)
   {
     for(i in seq(along = lev)) testOutput[, lev[i]] <- runif(nrow(testOutput))
@@ -42,6 +51,7 @@ evalSummaryFunction <- function(y, wts, ctrl, lev, metric, method) {
       stop("train()'s use of ROC codes requires class probabilities. See the classProbs option of trainControl()")
   }
   if(!is.null(wts)) testOutput$weights <- sample(wts, min(10, length(wts)))
+  testOutput$rowIndex <- sample(1:n, size = nrow(testOutput))
   ctrl$summaryFunction(testOutput, lev, method)
 }
 
@@ -59,7 +69,7 @@ model2method <- function(x)
 {
   ## There are some disconnecs between the object class and the
   ## method used by train.
-  
+
   switch(x,
          randomForest = "rf",
          rvm = "rvmRadial",
@@ -92,7 +102,7 @@ gamFormula <- function(data, smoother = "s", cut = 8, y = "y")
 {
   nzv <- nearZeroVar(data)
   if(length(nzv) > 0) data <- data[, -nzv, drop = FALSE]
-  
+
   numValues <- apply(data, 2, function(x) length(unique(x)))
   prefix <- rep("", ncol(data))
   prefix[numValues > cut] <- paste(smoother, "(", sep = "")
@@ -127,30 +137,30 @@ prettySeq <- function(x) paste("Resample", gsub(" ", "0", format(seq(along = x))
 
 ipredStats <- function(x)
 {
-  requireNamespace("e1071", quietly = TRUE)
+  requireNamespaceQuietStop("e1071")
   ## error check
   if(is.null(x$X)) stop("to get OOB stats, keepX must be TRUE when calling the bagging function")
-  
+
   foo <- function(object, y, x)
     {
       holdY <- y[-object$bindx]
       if(is.factor(y))
         {
-          requireNamespace("e1071", quietly = TRUE)
-          tmp <- predict(object$btree, x[-object$bindx,], type = "class")
+          requireNamespaceQuietStop("e1071")
+          tmp <- predict(object$btree, x[-object$bindx,,drop = FALSE], type = "class")
           tmp <- factor(as.character(tmp), levels = levels(y))
           out <- c(
                    mean(holdY == tmp),
                    e1071::classAgreement(table(holdY, tmp))$kappa)
-          
+
         } else {
-          tmp <- predict(object$btree, x[-object$bindx,])
+          tmp <- predict(object$btree, x[-object$bindx,,drop = FALSE])
 
           out <- c(
                    sqrt(mean((tmp - holdY)^2, na.rm = TRUE)),
                    cor(holdY, tmp, use = "pairwise.complete.obs")^2)
         }
-      out    
+      out
     }
   eachStat <- lapply(x$mtrees, foo, y = x$y, x = x$X)
   eachStat <- matrix(unlist(eachStat), nrow = length(eachStat[[1]]))
@@ -167,23 +177,23 @@ rfStats <- function(x)
                 x$type,
                 regression =   c(sqrt(max(x$mse[length(x$mse)], 0)), x$rsq[length(x$rsq)]),
                 classification = {
-                  requireNamespace("e1071", quietly = TRUE)
+                  requireNamespaceQuietStop("e1071")
                   c(
                     1 - x$err.rate[x$ntree, "OOB"],
                     e1071::classAgreement(x$confusion[,-dim(x$confusion)[2]])[["kappa"]])
                 })
   names(out) <- if(x$type == "regression") c("RMSE", "Rsquared") else c("Accuracy", "Kappa")
-  out              
+  out
 }
 
 cforestStats <- function(x)
 {
-  library(party)
-  
+  loadNamespace("party")
+
   obs <- x@data@get("response")[,1]
   pred <- predict(x,  x@data@get("input"), OOB = TRUE)
   postResample(pred, obs)
-  
+
 
 }
 
@@ -200,27 +210,6 @@ R2 <- function(pred, obs, formula = "corr", na.rm = FALSE)
 
 
 RMSE <- function(pred, obs, na.rm = FALSE) sqrt(mean((pred - obs)^2, na.rm = na.rm))
-
-
-defaultSummary <- function(data, lev = NULL, model = NULL)
-  {
-    if(is.character(data$obs)) data$obs <- factor(data$obs, levels = lev)
-    postResample(data[,"pred"], data[,"obs"])
-  }
-
-twoClassSummary <- function (data, lev = NULL, model = NULL) 
-{
-  require(pROC)
-  if (!all(levels(data[, "pred"]) == levels(data[, "obs"]))) 
-    stop("levels of observed and predicted data do not match")
-  rocObject <- try(pROC::roc(data$obs, data[, lev[1]]), silent = TRUE)
-  rocAUC <- if(class(rocObject)[1] == "try-error") NA else rocObject$auc
-  out <- c(rocAUC,
-           sensitivity(data[, "pred"], data[, "obs"], lev[1]),
-           specificity(data[, "pred"], data[, "obs"], lev[2]))
-  names(out) <- c("ROC", "Sens", "Spec")
-  out
-}
 
 partRuleSummary <- function(x)
   {
@@ -239,11 +228,11 @@ partRuleSummary <- function(x)
     names(numClass) <- classes
     for(i in seq(along = classes))
       numClass[i] <- sum(grepl(paste(":", classes[i], sep = " "), classPred))
-    
+
     list(varUsage = varUsage,
          numCond = length(conditions),
          classes = numClass)
-    
+
   }
 
 ripperRuleSummary <- function(x)
@@ -264,11 +253,11 @@ ripperRuleSummary <- function(x)
     names(numClass) <- classes
     for(i in seq(along = classes))
       numClass[i] <- sum(grepl(paste(x$terms[[2]], "=", classes[i], sep = ""), conditions))
-    
+
     list(varUsage = varUsage,
          numCond = length(conditions),
          classes = numClass)
-    
+
   }
 
 ##########################################################################################################
@@ -287,7 +276,7 @@ splitIndicies <- function(n, k)
 
 
 repList <- function(x, times = 3, addIndex = FALSE)
-  { 
+  {
     out <- vector(mode = "list", length = times)
     out <- lapply(out, function(a, b) b, b = x)
     if(addIndex) for(i in seq(along = out)) out[[i]]$.index <- i
@@ -327,7 +316,7 @@ smootherFormula <- function(data, smoother = "s", cut = 10, df = 0, span = .5, d
     if(smoother == "rcs")
       {
         suffix[numValues > cut] <- ")"
-      }    
+      }
     rhs <- paste(prefix, names(numValues), suffix, sep = "")
     rhs <- paste(rhs, collapse = "+")
     form <- as.formula(paste(y, rhs, sep = "~"))
@@ -351,7 +340,7 @@ makeTable <- function(x)
     data.frame(method = as.character(x$model)[1],
                Package = cranRef(as.character(x$Package)[1]),
                Parameters = params)
-    
+
 
   }
 
@@ -361,3 +350,207 @@ scrubCall <- function(x)
     for(i in items) if(nchar(as.character(x[i])) > 100) x[i] <- "scrubbed"
     x
   }
+
+class2ind <- function(x, drop2nd = FALSE) {
+	if(!is.factor(x)) stop("'x' should be a factor")
+	y <- model.matrix(~ x - 1)
+	colnames(y) <- gsub("^x", "", colnames(y))
+	attributes(y)$assign <- NULL
+	attributes(y)$contrasts <- NULL
+	if(length(levels(x)) == 2 & drop2nd) {
+		y <- y[,1]
+	}
+	y
+}
+
+requireNamespaceQuietStop <- function(package) {
+    if (!requireNamespace(package, quietly = TRUE))
+        stop(paste('package',package,'is required'))
+}
+
+get_resample_perf <- function (x, ...) UseMethod("get_resample_perf")
+
+get_resample_perf.train <- function(x) {
+  if(x$control$returnResamp == "none")
+    stop("use returnResamp == 'none' in trainControl()")
+  out <- merge(x$resample, x$bestTune)
+  out[, c(x$perfNames, "Resample")]
+}
+
+get_resample_perf.rfe <- function(x) {
+  if(x$control$returnResamp == "none")
+    stop("use returnResamp == 'none' in trainControl()")
+  out <- subset(x$resample, Variables == x$bestSubset)
+  out[, c(x$perfNames, "Resample")]
+}
+
+get_resample_perf.sbf <- function(x) {
+  if(x$control$returnResamp == "none")
+    stop("use returnResamp == 'none' in trainControl()")
+  x$resample
+}
+
+get_resample_perf.safs <- function(x) {
+  out <- subset(x$external, Iter == x$optIter)
+  out[, !(names(out) %in% "Iter")]
+}
+
+get_resample_perf.gafs <- function(x) {
+  out <- subset(x$external, Iter == x$optIter)
+  out[, !(names(out) %in% "Iter")]
+}
+
+
+var_seq <- function(p, classification = FALSE, len = 3) {
+  if(len == 1) {
+    tuneSeq <- if(classification) max(floor(p/3), 1) else floor(sqrt(p))
+  } else {
+    if(p <= len)
+    {
+      tuneSeq <- floor(seq(2, to = p, length = p))
+    } else {
+      if(p < 500 ) tuneSeq <- floor(seq(2, to = p, length = len))
+      else tuneSeq <- floor(2^seq(1, to = log(p, base = 2), length = len))
+    }
+  }
+  if(any(table(tuneSeq) > 1)) {
+    tuneSeq <- unique(tuneSeq)
+    cat(
+      "note: only",
+      length(tuneSeq),
+      "unique complexity parameters in default grid.",
+      "Truncating the grid to",
+      length(tuneSeq), ".\n\n")
+  }
+  tuneSeq
+}
+
+parse_sampling <- function(x) {
+  ## x could be
+  ### a string to match to a existing method
+  ### a function
+  ### a list
+
+  ## output should be a list with elements
+  ### name
+  ### func
+  ### before_pp (logical)
+  x_class <- class(x)[1]
+  if(!(x_class %in% c("character", "function", "list"))) {
+    stop(paste("The sampling argument should be either a",
+               "string, function, or list. See",
+               "http://topepo.github.io/caret/training.html"))
+  }
+  if(x_class == "character") {
+    x <- x[1]
+    load(system.file("models", "sampling.RData", package = "caret"))
+    s_method <- names(sampling_methods)
+    if(!(x %in% s_method)) {
+      stop("That sampling scheme is not in caret's built-in library")
+    } else {
+      x <- list(name = x,
+                func = sampling_methods[x][[1]],
+                first = TRUE)
+    }
+    pkgs <- switch(x$name, rose = "ROSE", smote = "DMwR", "")
+    if(pkgs != "") checkInstall(pkgs)
+  } else {
+    if(x_class == "function") {
+      check_samp_func(x)
+      x <- list(name = "custom",
+                func = x,
+                first = TRUE)
+    } else {
+      check_samp_list(x)
+    }
+  }
+  x
+}
+
+check_samp_func <- function(x) {
+  s_args <- sort(names(formals(x)))
+  if(length(s_args) != 2) {
+    stop("the 'sampling' function should have arguments 'x' and 'y'")
+  } else {
+    if(!all(s_args == c("x", "y")))
+      stop("the 'sampling' function should have arguments 'x' and 'y'")
+  }
+  invisible(NULL)
+}
+
+check_samp_list <- function(x) {
+  exp_names <- sort(c("name", "func", "first"))
+  x_names <- sort(names(x))
+  if(length(x_names) != length(exp_names)) {
+    stop(paste("the 'sampling' list should have elements",
+               paste(exp_names, sep = "", collapse = ", ")))
+  } else {
+    if(!all(exp_names == x_names))
+      stop(paste("the 'sampling' list should have elements",
+                 paste(exp_names, sep = "", collapse = ", ")))
+  }
+  check_samp_func(x$func)
+  if(!is.logical(x$first))
+    stop("The element 'first' should be a logical")
+  invisible(NULL)
+}
+
+#' @title Get sampling info from a train model
+#'
+#' @description Placeholder.
+#'
+#' @details Placeholder.
+#'
+#' @param method Modeling method.
+#' @param regex Whether to use regex matching.
+#' @param ... additional arguments to passed to grepl.
+#' @return A list
+#' @export
+getSamplingInfo <- function(method = NULL, regex = TRUE, ...) {
+  load(system.file("models", "sampling.RData", package = "caret"))
+  if (!is.null(method)) {
+    keepers <- if (regex)
+      grepl(method, names(sampling_methods), ...) else
+        which(method == names(sampling_methods))[1]
+    sampling_methods <- sampling_methods[keepers]
+  }
+  if (length(sampling_methods) == 0)
+    stop("That sampling method is not in caret's built-in library")
+  sampling_methods
+}
+
+get_labels <- function(mods, format = FALSE) {
+  lib <- getModelInfo()
+  lib_labs <- unlist(lapply(lib, function(x) x$label))
+  labs <- mods
+  is_match <- mods %in% names(lib)
+  if(any(is_match)) labs[is_match] <- lib_labs[mods[is_match]]
+  if(format) {
+    labs <- gsub("-", "--", labs)
+    labs <- gsub("with Polynomial Kernel", "(Polynomial)", labs)
+    labs <- gsub("with Radial Basis Function Kernel", "(RBF)", labs)
+    labs <- gsub("with Linear Kernel", "(Linear)", labs)
+    labs <- gsub("Linear Discriminant Analysis", "LDA", labs)
+    labs <- gsub("Quadratic Discriminant Analysis", "QDA", labs)
+    labs <- gsub("Multivariate Adaptive Regression Spline", "MARS", labs)
+    labs[labs == "glmnet"] <- "\\textsf{glmnet}"
+  }
+  if(length(mods) > 1) data.frame(model = mods, label = labs) else labs[1]
+}
+
+check_dims <- function(x, y) {
+  n <- if(class(y) == "Surv") nrow(y) else length(y)
+  stopifnot(nrow(x) > 1)
+  stopifnot(nrow(x) == n)
+  invisible(NULL)
+}
+
+get_model_type <- function(y, method = NULL) {
+  type <- if(class(y)[1] %in% c("numeric", "Surv", "integer")) "Regression" else "Classification"
+  type
+}
+
+get_range <- function(y) {
+  if(class(y)[1] == "factor") return(NA)
+  if(class(y)[1] %in% c("numeric", "integer")) extendrange(y) else extendrange(y[, "time"])
+}

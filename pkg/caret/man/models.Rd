@@ -4,18 +4,62 @@
 \title{A List of Available Models in train}
 \description{These models are included in the package via wrappers for \code{\link{train}}. Custom models can also be created. See the URL below.
 
+\strong{AdaBoost.M1} (\code{method = 'AdaBoost.M1'})
+
+For classification using packages \pkg{adabag} and \pkg{plyr} with tuning parameters:
+\itemize{
+\item Number of Trees (\code{mfinal}, numeric)
+\item Max Tree Depth (\code{maxdepth}, numeric)
+\item Coefficient Type (\code{coeflearn}, character)
+}
+
+
+\strong{Adaptive Mixture Discriminant Analysis} (\code{method = 'amdai'})
+
+For classification using package \pkg{adaptDA} with tuning parameters:
+\itemize{
+\item Model Type (\code{model}, character)
+}
+
+
+\strong{Adaptive-Network-Based Fuzzy Inference System} (\code{method = 'ANFIS'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
+}
+
+
+\strong{Bagged AdaBoost} (\code{method = 'AdaBag'})
+
+For classification using packages \pkg{adabag} and \pkg{plyr} with tuning parameters:
+\itemize{
+\item Number of Trees (\code{mfinal}, numeric)
+\item Max Tree Depth (\code{maxdepth}, numeric)
+}
+
+
 \strong{Bagged CART} (\code{method = 'treebag'})
 
 For classification and regression using packages \pkg{ipred} and \pkg{plyr} with no tuning parameters
 
 
 
+\strong{Bagged FDA using gCV Pruning} (\code{method = 'bagFDAGCV'})
+
+For classification using package \pkg{earth} with tuning parameters:
+\itemize{
+\item Product Degree (\code{degree}, numeric)
+}
+
+
 \strong{Bagged Flexible Discriminant Analysis} (\code{method = 'bagFDA'})
 
 For classification using packages \pkg{earth} and \pkg{mda} with tuning parameters:
 \itemize{
-\item Product Degree (\code{degree})
-\item Number of Terms (\code{nprune})
+\item Product Degree (\code{degree}, numeric)
+\item Number of Terms (\code{nprune}, numeric)
 }
 
 
@@ -23,8 +67,8 @@ For classification using packages \pkg{earth} and \pkg{mda} with tuning paramete
 
 For classification and regression using package \pkg{logicFS} with tuning parameters:
 \itemize{
-\item Maximum Number of Leaves (\code{nleaves})
-\item Number of Trees (\code{ntrees})
+\item Maximum Number of Leaves (\code{nleaves}, numeric)
+\item Number of Trees (\code{ntrees}, numeric)
 }
 
 
@@ -32,8 +76,16 @@ For classification and regression using package \pkg{logicFS} with tuning parame
 
 For classification and regression using package \pkg{earth} with tuning parameters:
 \itemize{
-\item Number of Terms (\code{nprune})
-\item Product Degree (\code{degree})
+\item Number of Terms (\code{nprune}, numeric)
+\item Product Degree (\code{degree}, numeric)
+}
+
+
+\strong{Bagged MARS using gCV Pruning} (\code{method = 'bagEarthGCV'})
+
+For classification and regression using package \pkg{earth} with tuning parameters:
+\itemize{
+\item Product Degree (\code{degree}, numeric)
 }
 
 
@@ -41,7 +93,7 @@ For classification and regression using package \pkg{earth} with tuning paramete
 
 For classification and regression using package \pkg{caret} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{vars})
+\item Number of Randomly Selected Predictors (\code{vars}, numeric)
 }
 
 
@@ -55,17 +107,25 @@ For classification and regression using package \pkg{arm} with no tuning paramet
 
 For regression using package \pkg{brnn} with tuning parameters:
 \itemize{
-\item Number of  Neurons (\code{neurons})
+\item Number of  Neurons (\code{neurons}, numeric)
+}
+
+
+\strong{Binary Discriminant Analysis} (\code{method = 'binda'})
+
+For classification using package \pkg{binda} with tuning parameters:
+\itemize{
+\item Shrinkage Intensity (\code{lambda.freqs}, numeric)
 }
 
 
 \strong{Boosted Classification Trees} (\code{method = 'ada'})
 
-For classification using package \pkg{ada} with tuning parameters:
+For classification using packages \pkg{ada} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of Trees (\code{iter})
-\item Max Tree Depth (\code{maxdepth})
-\item Learning Rate (\code{nu})
+\item Number of Trees (\code{iter}, numeric)
+\item Max Tree Depth (\code{maxdepth}, numeric)
+\item Learning Rate (\code{nu}, numeric)
 }
 
 
@@ -73,8 +133,8 @@ For classification using package \pkg{ada} with tuning parameters:
 
 For classification and regression using package \pkg{mboost} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{mstop})
-\item AIC Prune? (\code{prune})
+\item Number of  Boosting Iterations (\code{mstop}, numeric)
+\item AIC Prune? (\code{prune}, character)
 }
 
 
@@ -82,8 +142,8 @@ For classification and regression using package \pkg{mboost} with tuning paramet
 
 For classification and regression using package \pkg{mboost} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{mstop})
-\item AIC Prune? (\code{prune})
+\item Number of  Boosting Iterations (\code{mstop}, numeric)
+\item AIC Prune? (\code{prune}, character)
 }
 
 
@@ -91,8 +151,8 @@ For classification and regression using package \pkg{mboost} with tuning paramet
 
 For classification and regression using packages \pkg{bst} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{mstop})
-\item Shrinkage (\code{nu})
+\item Number of  Boosting Iterations (\code{mstop}, numeric)
+\item Shrinkage (\code{nu}, numeric)
 }
 
 
@@ -100,7 +160,7 @@ For classification and regression using packages \pkg{bst} and \pkg{plyr} with t
 
 For classification using package \pkg{caTools} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{nIter})
+\item Number of  Boosting Iterations (\code{nIter}, numeric)
 }
 
 
@@ -108,8 +168,8 @@ For classification using package \pkg{caTools} with tuning parameters:
 
 For classification and regression using packages \pkg{bst} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{mstop})
-\item Shrinkage (\code{nu})
+\item Number of  Boosting Iterations (\code{mstop}, numeric)
+\item Shrinkage (\code{nu}, numeric)
 }
 
 
@@ -117,8 +177,8 @@ For classification and regression using packages \pkg{bst} and \pkg{plyr} with t
 
 For classification and regression using packages \pkg{party}, \pkg{mboost} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of Trees (\code{mstop})
-\item Max Tree Depth (\code{maxdepth})
+\item Number of Trees (\code{mstop}, numeric)
+\item Max Tree Depth (\code{maxdepth}, numeric)
 }
 
 
@@ -126,9 +186,9 @@ For classification and regression using packages \pkg{party}, \pkg{mboost} and \
 
 For classification and regression using packages \pkg{bst} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{mstop})
-\item Max Tree Depth (\code{maxdepth})
-\item Shrinkage (\code{nu})
+\item Number of  Boosting Iterations (\code{mstop}, numeric)
+\item Max Tree Depth (\code{maxdepth}, numeric)
+\item Shrinkage (\code{nu}, numeric)
 }
 
 
@@ -136,7 +196,7 @@ For classification and regression using packages \pkg{bst} and \pkg{plyr} with t
 
 For classification using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Confidence Threshold (\code{C})
+\item Confidence Threshold (\code{C}, numeric)
 }
 
 
@@ -144,9 +204,9 @@ For classification using package \pkg{RWeka} with tuning parameters:
 
 For classification using packages \pkg{C50} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{trials})
-\item Model Type (\code{model})
-\item Winnow (\code{winnow})
+\item Number of  Boosting Iterations (\code{trials}, numeric)
+\item Model Type (\code{model}, character)
+\item Winnow (\code{winnow}, logical)
 }
 
 
@@ -154,7 +214,7 @@ For classification using packages \pkg{C50} and \pkg{plyr} with tuning parameter
 
 For classification and regression using package \pkg{rpart} with tuning parameters:
 \itemize{
-\item Complexity Parameter (\code{cp})
+\item Complexity Parameter (\code{cp}, numeric)
 }
 
 
@@ -162,7 +222,18 @@ For classification and regression using package \pkg{rpart} with tuning paramete
 
 For classification and regression using package \pkg{rpart} with tuning parameters:
 \itemize{
-\item Max Tree Depth (\code{maxdepth})
+\item Max Tree Depth (\code{maxdepth}, numeric)
+}
+
+
+\strong{CHi-squared Automated Interaction Detection} (\code{method = 'chaid'})
+
+For classification using package \pkg{CHAID} with tuning parameters:
+\itemize{
+\item Merging Threshold (\code{alpha2}, numeric)
+\item Splitting former Merged Threshold (\code{alpha3}, numeric)
+\item 
+                                                    Splitting former Merged Threshold (\code{alpha4}, numeric)
 }
 
 
@@ -170,7 +241,7 @@ For classification and regression using package \pkg{rpart} with tuning paramete
 
 For classification and regression using package \pkg{party} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -178,7 +249,7 @@ For classification and regression using package \pkg{party} with tuning paramete
 
 For classification and regression using package \pkg{party} with tuning parameters:
 \itemize{
-\item 1 - P-Value Threshold (\code{mincriterion})
+\item 1 - P-Value Threshold (\code{mincriterion}, numeric)
 }
 
 
@@ -186,7 +257,7 @@ For classification and regression using package \pkg{party} with tuning paramete
 
 For classification and regression using package \pkg{party} with tuning parameters:
 \itemize{
-\item Max Tree Depth (\code{maxdepth})
+\item Max Tree Depth (\code{maxdepth}, numeric)
 }
 
 
@@ -194,10 +265,10 @@ For classification and regression using package \pkg{party} with tuning paramete
 
 For classification using packages \pkg{C50} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{trials})
-\item Model Type (\code{model})
-\item Winnow (\code{winnow})
-\item Cost (\code{cost})
+\item Number of  Boosting Iterations (\code{trials}, numeric)
+\item Model Type (\code{model}, character)
+\item Winnow (\code{winnow}, logical)
+\item Cost (\code{cost}, numeric)
 }
 
 
@@ -205,8 +276,8 @@ For classification using packages \pkg{C50} and \pkg{plyr} with tuning parameter
 
 For classification using package \pkg{rpart} with tuning parameters:
 \itemize{
-\item Complexity Parameter (\code{cp})
-\item Cost (\code{Cost})
+\item Complexity Parameter (\code{cp}, numeric)
+\item Cost (\code{Cost}, numeric)
 }
 
 
@@ -214,8 +285,17 @@ For classification using package \pkg{rpart} with tuning parameters:
 
 For regression using package \pkg{Cubist} with tuning parameters:
 \itemize{
-\item Number of Committees (\code{committees})
-\item Number of Instances (\code{neighbors})
+\item Number of Committees (\code{committees}, numeric)
+\item Number of Instances (\code{neighbors}, numeric)
+}
+
+
+\strong{Dynamic Evolving Neural-Fuzzy Inference System } (\code{method = 'DENFIS'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Threshold (\code{Dthr}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
 }
 
 
@@ -223,8 +303,45 @@ For regression using package \pkg{Cubist} with tuning parameters:
 
 For regression using package \pkg{elasticnet} with tuning parameters:
 \itemize{
-\item Fraction of Full Solution (\code{fraction})
-\item Weight Decay (\code{lambda})
+\item Fraction of Full Solution (\code{fraction}, numeric)
+\item Weight Decay (\code{lambda}, numeric)
+}
+
+
+\strong{Ensemble Partial Least Squares Regression} (\code{method = 'enpls'})
+
+For regression using package \pkg{enpls} with tuning parameters:
+\itemize{
+\item Max. Number of Components (\code{maxcomp}, numeric)
+}
+
+
+\strong{Ensemble Partial Least Squares Regression with Feature Selection} (\code{method = 'enpls.fs'})
+
+For regression using package \pkg{enpls} with tuning parameters:
+\itemize{
+\item Max. Number of Components (\code{maxcomp}, numeric)
+\item Importance Cutoff (\code{threshold}, numeric)
+}
+
+
+\strong{eXtreme Gradient Boosting} (\code{method = 'xgbLinear'})
+
+For classification and regression using package \pkg{xgboost} with tuning parameters:
+\itemize{
+\item Number of  Boosting Iterations (\code{nrounds}, numeric)
+\item L2 Regularization (\code{lambda}, numeric)
+\item L2 Regularization (\code{alpha}, numeric)
+}
+
+
+\strong{eXtreme Gradient Boosting} (\code{method = 'xgbTree'})
+
+For classification and regression using packages \pkg{xgboost} and \pkg{plyr} with tuning parameters:
+\itemize{
+\item Number of  Boosting Iterations (\code{nrounds}, numeric)
+\item Max Tree Depth (\code{max_depth}, numeric)
+\item Shrinkage (\code{eta}, numeric)
 }
 
 
@@ -232,8 +349,8 @@ For regression using package \pkg{elasticnet} with tuning parameters:
 
 For classification and regression using package \pkg{elmNN} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{nhid})
-\item Activation Function (\code{actfun})
+\item Number of Hidden Units (\code{nhid}, numeric)
+\item Activation Function (\code{actfun}, character)
 }
 
 
@@ -241,7 +358,7 @@ For classification and regression using package \pkg{elmNN} with tuning paramete
 
 For classification using package \pkg{HiDimDA} with tuning parameters:
 \itemize{
-\item Number of  Factors (\code{q})
+\item Number of  Factors (\code{q}, numeric)
 }
 
 
@@ -249,8 +366,85 @@ For classification using package \pkg{HiDimDA} with tuning parameters:
 
 For classification using packages \pkg{earth} and \pkg{mda} with tuning parameters:
 \itemize{
-\item Product Degree (\code{degree})
-\item Number of Terms (\code{nprune})
+\item Product Degree (\code{degree}, numeric)
+\item Number of Terms (\code{nprune}, numeric)
+}
+
+
+\strong{Fuzzy Inference Rules by Descent Method} (\code{method = 'FIR.DM'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
+}
+
+
+\strong{Fuzzy Rules Using Chi's Method} (\code{method = 'FRBCS.CHI'})
+
+For classification using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Membership Function (\code{type.mf}, character)
+}
+
+
+\strong{Fuzzy Rules Using Genetic Cooperative-Competitive Learning} (\code{method = 'GFS.GCCL'})
+
+For classification using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Population Size (\code{popu.size}, numeric)
+\item Max. Generations (\code{max.gen}, numeric)
+}
+
+
+\strong{Fuzzy Rules Using Genetic Cooperative-Competitive Learning and Pittsburgh} (\code{method = 'FH.GBML'})
+
+For classification using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Max. Number of Rules (\code{max.num.rule}, numeric)
+\item Population Size (\code{popu.size}, numeric)
+\item Max. Generations (\code{max.gen}, numeric)
+}
+
+
+\strong{Fuzzy Rules Using the Structural Learning Algorithm on Vague Environment} (\code{method = 'SLAVE'})
+
+For classification using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
+\item Max. Generations (\code{max.gen}, numeric)
+}
+
+
+\strong{Fuzzy Rules via MOGUL} (\code{method = 'GFS.FR.MOGAL'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Max. Generations (\code{max.gen}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
+\item Max. Tuning Iterations (\code{max.tune}, numeric)
+}
+
+
+\strong{Fuzzy Rules via Thrift} (\code{method = 'GFS.THRIFT'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Population Size (\code{popu.size}, numeric)
+\item Number of  Fuzzy Labels (\code{num.labels}, numeric)
+\item Max. Generations (\code{max.gen}, numeric)
+}
+
+
+\strong{Fuzzy Rules with Weight Factor} (\code{method = 'FRBCS.W'})
+
+For classification using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Membership Function (\code{type.mf}, character)
 }
 
 
@@ -264,8 +458,8 @@ For classification and regression using package \pkg{kernlab} with no tuning par
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Polynomial Degree (\code{degree})
-\item Scale (\code{scale})
+\item Polynomial Degree (\code{degree}, numeric)
+\item Scale (\code{scale}, numeric)
 }
 
 
@@ -273,7 +467,7 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Sigma (\code{sigma})
+\item Sigma (\code{sigma}, numeric)
 }
 
 
@@ -281,8 +475,8 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For classification and regression using package \pkg{gam} with tuning parameters:
 \itemize{
-\item Span (\code{span})
-\item Degree (\code{degree})
+\item Span (\code{span}, numeric)
+\item Degree (\code{degree}, numeric)
 }
 
 
@@ -290,8 +484,8 @@ For classification and regression using package \pkg{gam} with tuning parameters
 
 For classification and regression using package \pkg{mgcv} with tuning parameters:
 \itemize{
-\item Feature Selection (\code{select})
-\item Method (\code{method})
+\item Feature Selection (\code{select}, logical)
+\item Method (\code{method}, character)
 }
 
 
@@ -299,7 +493,7 @@ For classification and regression using package \pkg{mgcv} with tuning parameter
 
 For classification and regression using package \pkg{gam} with tuning parameters:
 \itemize{
-\item Degrees of Freedom (\code{df})
+\item Degrees of Freedom (\code{df}, numeric)
 }
 
 
@@ -319,7 +513,17 @@ For classification and regression using package \pkg{MASS} with no tuning parame
 
 For classification using package \pkg{gpls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{K.prov})
+\item Number of Components (\code{K.prov}, numeric)
+}
+
+
+\strong{Genetic Lateral Tuning and Rule Selection of Linguistic Fuzzy Systems} (\code{method = 'GFS.LT.RS'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Population Size (\code{popu.size}, numeric)
+\item Number of  Fuzzy Labels (\code{num.labels}, numeric)
+\item Max. Generations (\code{max.gen}, numeric)
 }
 
 
@@ -327,8 +531,8 @@ For classification using package \pkg{gpls} with tuning parameters:
 
 For classification and regression using package \pkg{glmnet} with tuning parameters:
 \itemize{
-\item Mixing Percentage (\code{alpha})
-\item Regularization Parameter (\code{lambda})
+\item Mixing Percentage (\code{alpha}, numeric)
+\item Regularization Parameter (\code{lambda}, numeric)
 }
 
 
@@ -336,8 +540,8 @@ For classification and regression using package \pkg{glmnet} with tuning paramet
 
 For classification using packages \pkg{proxy} and \pkg{protoclass} with tuning parameters:
 \itemize{
-\item Ball Size (\code{eps})
-\item Distance Order (\code{Minkowski})
+\item Ball Size (\code{eps}, numeric)
+\item Distance Order (\code{Minkowski}, numeric)
 }
 
 
@@ -345,9 +549,9 @@ For classification using packages \pkg{proxy} and \pkg{protoclass} with tuning p
 
 For classification using package \pkg{hda} with tuning parameters:
 \itemize{
-\item Gamma (\code{gamma})
-\item Lambda (\code{lambda})
-\item Dimension of the Discriminative Subspace (\code{newdim})
+\item Gamma (\code{gamma}, numeric)
+\item Lambda (\code{lambda}, numeric)
+\item Dimension of the Discriminative Subspace (\code{newdim}, numeric)
 }
 
 
@@ -355,8 +559,17 @@ For classification using package \pkg{hda} with tuning parameters:
 
 For classification using package \pkg{HDclassif} with tuning parameters:
 \itemize{
-\item Threshold (\code{threshold})
-\item Model Type (\code{model})
+\item Threshold (\code{threshold}, character)
+\item Model Type (\code{model}, numeric)
+}
+
+
+\strong{Hybrid Neural Fuzzy Inference System} (\code{method = 'HYFIS'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
 }
 
 
@@ -364,7 +577,7 @@ For classification using package \pkg{HDclassif} with tuning parameters:
 
 For regression using package \pkg{fastICA} with tuning parameters:
 \itemize{
-\item Number of Components (\code{n.comp})
+\item Number of Components (\code{n.comp}, numeric)
 }
 
 
@@ -372,9 +585,9 @@ For regression using package \pkg{fastICA} with tuning parameters:
 
 For classification and regression using package \pkg{kknn} with tuning parameters:
 \itemize{
-\item Max. Number of Neighbors (\code{kmax})
-\item Distance (\code{distance})
-\item Kernel (\code{kernel})
+\item Max. Number of Neighbors (\code{kmax}, numeric)
+\item Distance (\code{distance}, numeric)
+\item Kernel (\code{kernel}, character)
 }
 
 
@@ -382,7 +595,7 @@ For classification and regression using package \pkg{kknn} with tuning parameter
 
 For classification and regression with tuning parameters:
 \itemize{
-\item Number of Neighbors (\code{k})
+\item Number of Neighbors (\code{k}, numeric)
 }
 
 
@@ -390,8 +603,8 @@ For classification and regression with tuning parameters:
 
 For classification using package \pkg{class} with tuning parameters:
 \itemize{
-\item Codebook Size (\code{size})
-\item Number of Prototypes (\code{k})
+\item Codebook Size (\code{size}, numeric)
+\item Number of Prototypes (\code{k}, numeric)
 }
 
 
@@ -399,7 +612,7 @@ For classification using package \pkg{class} with tuning parameters:
 
 For regression using package \pkg{lars} with tuning parameters:
 \itemize{
-\item Fraction (\code{fraction})
+\item Fraction (\code{fraction}, numeric)
 }
 
 
@@ -407,7 +620,7 @@ For regression using package \pkg{lars} with tuning parameters:
 
 For regression using package \pkg{lars} with tuning parameters:
 \itemize{
-\item Number of Steps (\code{step})
+\item Number of Steps (\code{step}, numeric)
 }
 
 
@@ -421,8 +634,8 @@ For classification using package \pkg{kernlab} with no tuning parameters
 
 For classification using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Polynomial Degree (\code{degree})
-\item Scale (\code{scale})
+\item Polynomial Degree (\code{degree}, numeric)
+\item Scale (\code{scale}, numeric)
 }
 
 
@@ -430,7 +643,7 @@ For classification using package \pkg{kernlab} with tuning parameters:
 
 For classification using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Sigma (\code{sigma})
+\item Sigma (\code{sigma}, numeric)
 }
 
 
@@ -444,7 +657,7 @@ For classification using package \pkg{MASS} with no tuning parameters
 
 For classification using package \pkg{MASS} with tuning parameters:
 \itemize{
-\item Number of Discriminant Functions (\code{dimen})
+\item Number of Discriminant Functions (\code{dimen}, numeric)
 }
 
 
@@ -452,8 +665,8 @@ For classification using package \pkg{MASS} with tuning parameters:
 
 For classification using packages \pkg{klaR} and \pkg{MASS} with tuning parameters:
 \itemize{
-\item Maximum Number of Variables (\code{maxvar})
-\item Search Direction (\code{direction})
+\item Maximum Number of Variables (\code{maxvar}, numeric)
+\item Search Direction (\code{direction}, character)
 }
 
 
@@ -467,7 +680,7 @@ For regression with no tuning parameters
 
 For regression using package \pkg{leaps} with tuning parameters:
 \itemize{
-\item Maximum Number of Predictors (\code{nvmax})
+\item Maximum Number of Predictors (\code{nvmax}, numeric)
 }
 
 
@@ -475,7 +688,7 @@ For regression using package \pkg{leaps} with tuning parameters:
 
 For regression using package \pkg{leaps} with tuning parameters:
 \itemize{
-\item Maximum Number of Predictors (\code{nvmax})
+\item Maximum Number of Predictors (\code{nvmax}, numeric)
 }
 
 
@@ -483,7 +696,7 @@ For regression using package \pkg{leaps} with tuning parameters:
 
 For regression using package \pkg{leaps} with tuning parameters:
 \itemize{
-\item Maximum Number of Predictors (\code{nvmax})
+\item Maximum Number of Predictors (\code{nvmax}, numeric)
 }
 
 
@@ -497,8 +710,8 @@ For regression using package \pkg{MASS} with no tuning parameters
 
 For classification and regression using package \pkg{LogicReg} with tuning parameters:
 \itemize{
-\item Maximum Number of Leaves (\code{treesize})
-\item Number of Trees (\code{ntrees})
+\item Maximum Number of Leaves (\code{treesize}, numeric)
+\item Number of Trees (\code{ntrees}, numeric)
 }
 
 
@@ -506,7 +719,7 @@ For classification and regression using package \pkg{LogicReg} with tuning param
 
 For classification using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Number of  Iteratons (\code{iter})
+\item Number of  Iteratons (\code{iter}, numeric)
 }
 
 
@@ -520,7 +733,7 @@ For classification using package \pkg{HiDimDA} with no tuning parameters
 
 For classification using package \pkg{mda} with tuning parameters:
 \itemize{
-\item Number of Subclasses Per Class (\code{subclasses})
+\item Number of Subclasses Per Class (\code{subclasses}, numeric)
 }
 
 
@@ -528,9 +741,9 @@ For classification using package \pkg{mda} with tuning parameters:
 
 For classification and regression using package \pkg{nnet} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
-\item Weight Decay (\code{decay})
-\item Bagging (\code{bag})
+\item Number of Hidden Units (\code{size}, numeric)
+\item Weight Decay (\code{decay}, numeric)
+\item Bagging (\code{bag}, logical)
 }
 
 
@@ -538,8 +751,8 @@ For classification and regression using package \pkg{nnet} with tuning parameter
 
 For regression using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Pruned (\code{pruned})
-\item Smoothed (\code{smoothed})
+\item Pruned (\code{pruned}, character)
+\item Smoothed (\code{smoothed}, character)
 }
 
 
@@ -547,9 +760,9 @@ For regression using package \pkg{RWeka} with tuning parameters:
 
 For regression using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Pruned (\code{pruned})
-\item Smoothed (\code{smoothed})
-\item Rules (\code{rules})
+\item Pruned (\code{pruned}, character)
+\item Smoothed (\code{smoothed}, character)
+\item Rules (\code{rules}, character)
 }
 
 
@@ -557,7 +770,7 @@ For regression using package \pkg{RWeka} with tuning parameters:
 
 For classification and regression using package \pkg{RSNNS} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
+\item Number of Hidden Units (\code{size}, numeric)
 }
 
 
@@ -565,8 +778,8 @@ For classification and regression using package \pkg{RSNNS} with tuning paramete
 
 For classification and regression using package \pkg{RSNNS} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
-\item Weight Decay (\code{decay})
+\item Number of Hidden Units (\code{size}, numeric)
+\item Weight Decay (\code{decay}, numeric)
 }
 
 
@@ -574,8 +787,8 @@ For classification and regression using package \pkg{RSNNS} with tuning paramete
 
 For classification and regression using package \pkg{earth} with tuning parameters:
 \itemize{
-\item Number of Terms (\code{nprune})
-\item Product Degree (\code{degree})
+\item Number of Terms (\code{nprune}, numeric)
+\item Product Degree (\code{degree}, numeric)
 }
 
 
@@ -583,7 +796,7 @@ For classification and regression using package \pkg{earth} with tuning paramete
 
 For classification and regression using package \pkg{earth} with tuning parameters:
 \itemize{
-\item Product Degree (\code{degree})
+\item Product Degree (\code{degree}, numeric)
 }
 
 
@@ -591,8 +804,8 @@ For classification and regression using package \pkg{earth} with tuning paramete
 
 For classification using package \pkg{klaR} with tuning parameters:
 \itemize{
-\item Laplace Correction (\code{fL})
-\item Distribution Type (\code{usekernel})
+\item Laplace Correction (\code{fL}, numeric)
+\item Distribution Type (\code{usekernel}, logical)
 }
 
 
@@ -600,7 +813,7 @@ For classification using package \pkg{klaR} with tuning parameters:
 
 For classification using package \pkg{pamr} with tuning parameters:
 \itemize{
-\item Shrinkage Threshold (\code{threshold})
+\item Shrinkage Threshold (\code{threshold}, numeric)
 }
 
 
@@ -608,9 +821,9 @@ For classification using package \pkg{pamr} with tuning parameters:
 
 For regression using package \pkg{neuralnet} with tuning parameters:
 \itemize{
-\item Number of Hidden Units in Layer 1 (\code{layer1})
-\item Number of Hidden Units in Layer 2 (\code{layer2})
-\item Number of Hidden Units in Layer 3 (\code{layer3})
+\item Number of Hidden Units in Layer 1 (\code{layer1}, numeric)
+\item Number of Hidden Units in Layer 2 (\code{layer2}, numeric)
+\item Number of Hidden Units in Layer 3 (\code{layer3}, numeric)
 }
 
 
@@ -618,8 +831,8 @@ For regression using package \pkg{neuralnet} with tuning parameters:
 
 For classification and regression using package \pkg{nnet} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
-\item Weight Decay (\code{decay})
+\item Number of Hidden Units (\code{size}, numeric)
+\item Weight Decay (\code{decay}, numeric)
 }
 
 
@@ -627,8 +840,8 @@ For classification and regression using package \pkg{nnet} with tuning parameter
 
 For classification and regression using package \pkg{nnet} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
-\item Weight Decay (\code{decay})
+\item Number of Hidden Units (\code{size}, numeric)
+\item Weight Decay (\code{decay}, numeric)
 }
 
 
@@ -636,7 +849,7 @@ For classification and regression using package \pkg{nnet} with tuning parameter
 
 For classification using package \pkg{obliqueRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -644,7 +857,7 @@ For classification using package \pkg{obliqueRF} with tuning parameters:
 
 For classification using package \pkg{obliqueRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -652,7 +865,7 @@ For classification using package \pkg{obliqueRF} with tuning parameters:
 
 For classification using package \pkg{obliqueRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -660,7 +873,7 @@ For classification using package \pkg{obliqueRF} with tuning parameters:
 
 For classification using package \pkg{obliqueRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -668,16 +881,22 @@ For classification using package \pkg{obliqueRF} with tuning parameters:
 
 For classification using package \pkg{oblique.tree} with tuning parameters:
 \itemize{
-\item Oblique Splits (\code{oblique.splits})
-\item Variable Selection Method (\code{variable.selection})
+\item Oblique Splits (\code{oblique.splits}, character)
+\item Variable Selection Method (\code{variable.selection}, character)
 }
+
+
+\strong{Ordered Logistic or Probit Regression} (\code{method = 'polr'})
+
+For classification using package \pkg{MASS} with no tuning parameters
+
 
 
 \strong{Parallel Random Forest} (\code{method = 'parRF'})
 
 For classification and regression using package \pkg{randomForest} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -685,8 +904,8 @@ For classification and regression using package \pkg{randomForest} with tuning p
 
 For classification and regression using package \pkg{partDSA} with tuning parameters:
 \itemize{
-\item Number of Terminal Partitions (\code{cut.off.growth})
-\item Minimum Percent Difference (\code{MPD})
+\item Number of Terminal Partitions (\code{cut.off.growth}, numeric)
+\item Minimum Percent Difference (\code{MPD}, numeric)
 }
 
 
@@ -694,7 +913,7 @@ For classification and regression using package \pkg{partDSA} with tuning parame
 
 For classification and regression using package \pkg{pls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{ncomp})
+\item Number of Components (\code{ncomp}, numeric)
 }
 
 
@@ -702,7 +921,7 @@ For classification and regression using package \pkg{pls} with tuning parameters
 
 For classification and regression using package \pkg{pls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{ncomp})
+\item Number of Components (\code{ncomp}, numeric)
 }
 
 
@@ -710,7 +929,7 @@ For classification and regression using package \pkg{pls} with tuning parameters
 
 For classification and regression using package \pkg{pls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{ncomp})
+\item Number of Components (\code{ncomp}, numeric)
 }
 
 
@@ -718,7 +937,16 @@ For classification and regression using package \pkg{pls} with tuning parameters
 
 For classification and regression using package \pkg{pls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{ncomp})
+\item Number of Components (\code{ncomp}, numeric)
+}
+
+
+\strong{Partial Least Squares Generalized Linear Models } (\code{method = 'plsRglm'})
+
+For classification and regression using package \pkg{plsRglm} with tuning parameters:
+\itemize{
+\item Number of PLS Components (\code{nt}, numeric)
+\item p-Value threshold (\code{alpha.pvals.expli}, numeric)
 }
 
 
@@ -726,7 +954,7 @@ For classification and regression using package \pkg{pls} with tuning parameters
 
 For classification using package \pkg{mda} with tuning parameters:
 \itemize{
-\item Shrinkage Penalty Coefficient (\code{lambda})
+\item Shrinkage Penalty Coefficient (\code{lambda}, numeric)
 }
 
 
@@ -734,7 +962,7 @@ For classification using package \pkg{mda} with tuning parameters:
 
 For classification using package \pkg{mda} with tuning parameters:
 \itemize{
-\item Degrees of Freedom (\code{df})
+\item Degrees of Freedom (\code{df}, numeric)
 }
 
 
@@ -742,8 +970,8 @@ For classification using package \pkg{mda} with tuning parameters:
 
 For classification using packages \pkg{penalizedLDA} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item L1 Penalty (\code{lambda})
-\item Number of Discriminant Functions (\code{K})
+\item L1 Penalty (\code{lambda}, numeric)
+\item Number of Discriminant Functions (\code{K}, numeric)
 }
 
 
@@ -751,8 +979,8 @@ For classification using packages \pkg{penalizedLDA} and \pkg{plyr} with tuning 
 
 For regression using package \pkg{penalized} with tuning parameters:
 \itemize{
-\item L1 Penalty (\code{lambda1})
-\item L2 Penalty (\code{lambda2})
+\item L1 Penalty (\code{lambda1}, numeric)
+\item L2 Penalty (\code{lambda2}, numeric)
 }
 
 
@@ -760,8 +988,8 @@ For regression using package \pkg{penalized} with tuning parameters:
 
 For classification using package \pkg{stepPlr} with tuning parameters:
 \itemize{
-\item L2 Penalty (\code{lambda})
-\item Complexity Parameter (\code{cp})
+\item L2 Penalty (\code{lambda}, numeric)
+\item Complexity Parameter (\code{cp}, character)
 }
 
 
@@ -769,7 +997,7 @@ For classification using package \pkg{stepPlr} with tuning parameters:
 
 For classification using package \pkg{nnet} with tuning parameters:
 \itemize{
-\item Weight Decay (\code{decay})
+\item Weight Decay (\code{decay}, numeric)
 }
 
 
@@ -777,8 +1005,8 @@ For classification using package \pkg{nnet} with tuning parameters:
 
 For regression using package \pkg{KRLS} with tuning parameters:
 \itemize{
-\item Regularization Parameter (\code{lambda})
-\item Polynomial Degree (\code{degree})
+\item Regularization Parameter (\code{lambda}, numeric)
+\item Polynomial Degree (\code{degree}, numeric)
 }
 
 
@@ -786,7 +1014,7 @@ For regression using package \pkg{KRLS} with tuning parameters:
 
 For regression using package \pkg{pls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{ncomp})
+\item Number of Components (\code{ncomp}, numeric)
 }
 
 
@@ -794,7 +1022,7 @@ For regression using package \pkg{pls} with tuning parameters:
 
 For regression with tuning parameters:
 \itemize{
-\item Number of  Terms (\code{nterms})
+\item Number of  Terms (\code{nterms}, numeric)
 }
 
 
@@ -808,8 +1036,8 @@ For classification using package \pkg{MASS} with no tuning parameters
 
 For classification using packages \pkg{klaR} and \pkg{MASS} with tuning parameters:
 \itemize{
-\item Maximum Number of Variables (\code{maxvar})
-\item Search Direction (\code{direction})
+\item Maximum Number of Variables (\code{maxvar}, numeric)
+\item Search Direction (\code{direction}, character)
 }
 
 
@@ -817,7 +1045,7 @@ For classification using packages \pkg{klaR} and \pkg{MASS} with tuning paramete
 
 For regression using package \pkg{quantregForest} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -825,9 +1053,9 @@ For regression using package \pkg{quantregForest} with tuning parameters:
 
 For regression using package \pkg{qrnn} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{n.hidden})
-\item  Weight Decay (\code{penalty})
-\item Bagged Models? (\code{bag})
+\item Number of Hidden Units (\code{n.hidden}, numeric)
+\item  Weight Decay (\code{penalty}, numeric)
+\item Bagged Models? (\code{bag}, logical)
 }
 
 
@@ -835,16 +1063,16 @@ For regression using package \pkg{qrnn} with tuning parameters:
 
 For regression using packages \pkg{KRLS} and \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Regularization Parameter (\code{lambda})
-\item Sigma (\code{sigma})
+\item Regularization Parameter (\code{lambda}, numeric)
+\item Sigma (\code{sigma}, numeric)
 }
 
 
 \strong{Radial Basis Function Network} (\code{method = 'rbf'})
 
-For classification using package \pkg{RSNNS} with tuning parameters:
+For classification and regression using package \pkg{RSNNS} with tuning parameters:
 \itemize{
-\item Number of Hidden Units (\code{size})
+\item Number of Hidden Units (\code{size}, numeric)
 }
 
 
@@ -852,7 +1080,7 @@ For classification using package \pkg{RSNNS} with tuning parameters:
 
 For classification and regression using package \pkg{RSNNS} with tuning parameters:
 \itemize{
-\item Activation Limit for Conflicting Classes (\code{negativeThreshold})
+\item Activation Limit for Conflicting Classes (\code{negativeThreshold}, numeric)
 }
 
 
@@ -860,7 +1088,7 @@ For classification and regression using package \pkg{RSNNS} with tuning paramete
 
 For classification using package \pkg{rFerns} with tuning parameters:
 \itemize{
-\item Fern Depth (\code{depth})
+\item Fern Depth (\code{depth}, numeric)
 }
 
 
@@ -868,7 +1096,7 @@ For classification using package \pkg{rFerns} with tuning parameters:
 
 For classification and regression using package \pkg{randomForest} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -876,8 +1104,8 @@ For classification and regression using package \pkg{randomForest} with tuning p
 
 For classification and regression using package \pkg{extraTrees} with tuning parameters:
 \itemize{
-\item Number of  Randomly Selected Predictors (\code{mtry})
-\item Number of  Random Cuts (\code{numRandomCuts})
+\item Number of  Randomly Selected Predictors (\code{mtry}, numeric)
+\item Number of  Random Cuts (\code{numRandomCuts}, numeric)
 }
 
 
@@ -885,7 +1113,7 @@ For classification and regression using package \pkg{extraTrees} with tuning par
 
 For classification and regression using packages \pkg{Boruta} and \pkg{randomForest} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -893,8 +1121,8 @@ For classification and regression using packages \pkg{Boruta} and \pkg{randomFor
 
 For classification and regression using package \pkg{rknn} with tuning parameters:
 \itemize{
-\item Number of Neighbors (\code{k})
-\item Number of Randomly Selected Predictors (\code{mtry})
+\item Number of Neighbors (\code{k}, numeric)
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 
@@ -902,9 +1130,9 @@ For classification and regression using package \pkg{rknn} with tuning parameter
 
 For classification and regression using packages \pkg{rknn} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of Neighbors (\code{k})
-\item Number of Randomly Selected Predictors (\code{mtry})
-\item Number of Features Dropped (\code{d})
+\item Number of Neighbors (\code{k}, numeric)
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
+\item Number of Features Dropped (\code{d}, numeric)
 }
 
 
@@ -912,8 +1140,8 @@ For classification and regression using packages \pkg{rknn} and \pkg{plyr} with 
 
 For classification using package \pkg{klaR} with tuning parameters:
 \itemize{
-\item Gamma (\code{gamma})
-\item Lambda (\code{lambda})
+\item Gamma (\code{gamma}, numeric)
+\item Lambda (\code{lambda}, numeric)
 }
 
 
@@ -921,9 +1149,9 @@ For classification using package \pkg{klaR} with tuning parameters:
 
 For classification and regression using packages \pkg{randomForest} and \pkg{RRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
-\item Regularization Value (\code{coefReg})
-\item Importance Coefficient (\code{coefImp})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
+\item Regularization Value (\code{coefReg}, numeric)
+\item Importance Coefficient (\code{coefImp}, numeric)
 }
 
 
@@ -931,8 +1159,8 @@ For classification and regression using packages \pkg{randomForest} and \pkg{RRF
 
 For classification and regression using package \pkg{RRF} with tuning parameters:
 \itemize{
-\item Number of Randomly Selected Predictors (\code{mtry})
-\item Regularization Value (\code{coefReg})
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
+\item Regularization Value (\code{coefReg}, numeric)
 }
 
 
@@ -940,8 +1168,8 @@ For classification and regression using package \pkg{RRF} with tuning parameters
 
 For regression using packages \pkg{relaxo} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Penalty Parameter (\code{lambda})
-\item Relaxation Parameter (\code{phi})
+\item Penalty Parameter (\code{lambda}, numeric)
+\item Relaxation Parameter (\code{phi}, numeric)
 }
 
 
@@ -955,8 +1183,8 @@ For regression using package \pkg{kernlab} with no tuning parameters
 
 For regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Scale (\code{scale})
-\item Polynomial Degree (\code{degree})
+\item Scale (\code{scale}, numeric)
+\item Polynomial Degree (\code{degree}, numeric)
 }
 
 
@@ -964,7 +1192,7 @@ For regression using package \pkg{kernlab} with tuning parameters:
 
 For regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Sigma (\code{sigma})
+\item Sigma (\code{sigma}, numeric)
 }
 
 
@@ -972,7 +1200,7 @@ For regression using package \pkg{kernlab} with tuning parameters:
 
 For regression using package \pkg{elasticnet} with tuning parameters:
 \itemize{
-\item Weight Decay (\code{lambda})
+\item Weight Decay (\code{lambda}, numeric)
 }
 
 
@@ -980,8 +1208,8 @@ For regression using package \pkg{elasticnet} with tuning parameters:
 
 For regression using package \pkg{foba} with tuning parameters:
 \itemize{
-\item Number of Variables Retained (\code{k})
-\item L2 Penalty (\code{lambda})
+\item Number of Variables Retained (\code{k}, numeric)
+\item L2 Penalty (\code{lambda}, numeric)
 }
 
 
@@ -997,6 +1225,15 @@ For regression using package \pkg{MASS} with no tuning parameters
 
 
 
+\strong{Robust Mixture Discriminant Analysis} (\code{method = 'rmda'})
+
+For classification using package \pkg{robustDA} with tuning parameters:
+\itemize{
+\item Number of Subclasses Per Class (\code{K}, numeric)
+\item Model (\code{model}, character)
+}
+
+
 \strong{Robust Quadratic Discriminant Analysis} (\code{method = 'QdaCov'})
 
 For classification using package \pkg{rrcov} with no tuning parameters
@@ -1007,9 +1244,9 @@ For classification using package \pkg{rrcov} with no tuning parameters
 
 For classification using package \pkg{rrlda} with tuning parameters:
 \itemize{
-\item Penalty Parameter (\code{lambda})
-\item Robustness Parameter (\code{hp})
-\item Penalty Type (\code{penalty})
+\item Penalty Parameter (\code{lambda}, numeric)
+\item Robustness Parameter (\code{hp}, numeric)
+\item Penalty Type (\code{penalty}, character)
 }
 
 
@@ -1023,7 +1260,7 @@ For classification using package \pkg{rrcovHD} with no tuning parameters
 
 For classification using package \pkg{rocc} with tuning parameters:
 \itemize{
-\item Number of Variables Retained (\code{xgenes})
+\item Number of Variables Retained (\code{xgenes}, numeric)
 }
 
 
@@ -1031,7 +1268,7 @@ For classification using package \pkg{rocc} with tuning parameters:
 
 For classification using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Number of  Optimizations (\code{NumOpt})
+\item Number of  Optimizations (\code{NumOpt}, numeric)
 }
 
 
@@ -1039,8 +1276,8 @@ For classification using package \pkg{RWeka} with tuning parameters:
 
 For classification using package \pkg{RWeka} with tuning parameters:
 \itemize{
-\item Confidence Threshold (\code{threshold})
-\item Confidence Threshold (\code{pruned})
+\item Confidence Threshold (\code{threshold}, numeric)
+\item Confidence Threshold (\code{pruned}, character)
 }
 
 
@@ -1048,10 +1285,10 @@ For classification using package \pkg{RWeka} with tuning parameters:
 
 For classification and regression using package \pkg{kohonen} with tuning parameters:
 \itemize{
-\item Row (\code{xdim})
-\item Columns (\code{ydim})
-\item X Weight (\code{xweight})
-\item Topology (\code{topo})
+\item Row (\code{xdim}, numeric)
+\item Columns (\code{ydim}, numeric)
+\item X Weight (\code{xweight}, numeric)
+\item Topology (\code{topo}, character)
 }
 
 
@@ -1059,10 +1296,10 @@ For classification and regression using package \pkg{kohonen} with tuning parame
 
 For classification and regression using package \pkg{kohonen} with tuning parameters:
 \itemize{
-\item Row (\code{xdim})
-\item Columns (\code{ydim})
-\item X Weight (\code{xweight})
-\item Topology (\code{topo})
+\item Row (\code{xdim}, numeric)
+\item Columns (\code{ydim}, numeric)
+\item X Weight (\code{xweight}, numeric)
+\item Topology (\code{topo}, character)
 }
 
 
@@ -1070,8 +1307,8 @@ For classification and regression using package \pkg{kohonen} with tuning parame
 
 For classification using package \pkg{sda} with tuning parameters:
 \itemize{
-\item Diagonalize (\code{diagonal})
-\item shrinkage (\code{lambda})
+\item Diagonalize (\code{diagonal}, logical)
+\item shrinkage (\code{lambda}, numeric)
 }
 
 
@@ -1079,6 +1316,15 @@ For classification using package \pkg{sda} with tuning parameters:
 
 For classification using package \pkg{rrcovHD} with no tuning parameters
 
+
+
+\strong{Simplified TSK Fuzzy Rules} (\code{method = 'FS.HGD'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Max. Iterations (\code{max.iter}, numeric)
+}
 
 
 \strong{Single C5.0 Ruleset} (\code{method = 'C5.0Rules'})
@@ -1103,8 +1349,8 @@ For classification using package \pkg{RWeka} with no tuning parameters
 
 For classification using package \pkg{sparseLDA} with tuning parameters:
 \itemize{
-\item Number of  Predictors (\code{NumVars})
-\item Lambda (\code{lambda})
+\item Number of  Predictors (\code{NumVars}, numeric)
+\item Lambda (\code{lambda}, numeric)
 }
 
 
@@ -1112,9 +1358,9 @@ For classification using package \pkg{sparseLDA} with tuning parameters:
 
 For classification using package \pkg{sparseLDA} with tuning parameters:
 \itemize{
-\item Number of  Predictors (\code{NumVars})
-\item Lambda (\code{lambda})
-\item Number of  Subclasses (\code{R})
+\item Number of  Predictors (\code{NumVars}, numeric)
+\item Lambda (\code{lambda}, numeric)
+\item Number of  Subclasses (\code{R}, numeric)
 }
 
 
@@ -1122,9 +1368,9 @@ For classification using package \pkg{sparseLDA} with tuning parameters:
 
 For classification and regression using package \pkg{spls} with tuning parameters:
 \itemize{
-\item Number of Components (\code{K})
-\item Threshold (\code{eta})
-\item Kappa (\code{kappa})
+\item Number of Components (\code{K}, numeric)
+\item Threshold (\code{eta}, numeric)
+\item Kappa (\code{kappa}, numeric)
 }
 
 
@@ -1138,11 +1384,11 @@ For classification using package \pkg{ipred} with no tuning parameters
 
 For classification and regression using package \pkg{deepnet} with tuning parameters:
 \itemize{
-\item Hidden Layer 1 (\code{layer1})
-\item Hidden Layer 2 (\code{layer2})
-\item Hidden Layer 3 (\code{layer3})
-\item Hidden Dropouts (\code{hidden_dropout})
-\item Visible Dropout (\code{visible_dropout})
+\item Hidden Layer 1 (\code{layer1}, numeric)
+\item Hidden Layer 2 (\code{layer2}, numeric)
+\item Hidden Layer 3 (\code{layer3}, numeric)
+\item Hidden Dropouts (\code{hidden_dropout}, numeric)
+\item Visible Dropout (\code{visible_dropout}, numeric)
 }
 
 
@@ -1162,9 +1408,20 @@ For classification using package \pkg{SDDA} with no tuning parameters
 
 For classification and regression using packages \pkg{gbm} and \pkg{plyr} with tuning parameters:
 \itemize{
-\item Number of  Boosting Iterations (\code{n.trees})
-\item Max Tree Depth (\code{interaction.depth})
-\item Shrinkage (\code{shrinkage})
+\item Number of  Boosting Iterations (\code{n.trees}, numeric)
+\item Max Tree Depth (\code{interaction.depth}, numeric)
+\item Shrinkage (\code{shrinkage}, numeric)
+\item Min. Terminal Node Size (\code{n.minobsinnode}, numeric)
+}
+
+
+\strong{Subtractive Clustering and Fuzzy c-Means Rules} (\code{method = 'SBC'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Radius (\code{r.a}, numeric)
+\item Upper Threshold (\code{eps.high}, numeric)
+\item Lower Threshold (\code{eps.low}, numeric)
 }
 
 
@@ -1172,8 +1429,17 @@ For classification and regression using packages \pkg{gbm} and \pkg{plyr} with t
 
 For regression using package \pkg{superpc} with tuning parameters:
 \itemize{
-\item Threshold (\code{threshold})
-\item Number of Components (\code{n.components})
+\item Threshold (\code{threshold}, numeric)
+\item Number of Components (\code{n.components}, numeric)
+}
+
+
+\strong{Support Vector Machines with Boundrange String Kernel} (\code{method = 'svmBoundrangeString'})
+
+For classification and regression using package \pkg{kernlab} with tuning parameters:
+\itemize{
+\item length (\code{length}, numeric)
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1181,9 +1447,18 @@ For regression using package \pkg{superpc} with tuning parameters:
 
 For classification using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Sigma (\code{sigma})
-\item Cost (\code{C})
-\item Weight (\code{Weight})
+\item Sigma (\code{sigma}, numeric)
+\item Cost (\code{C}, numeric)
+\item Weight (\code{Weight}, numeric)
+}
+
+
+\strong{Support Vector Machines with Exponential String Kernel} (\code{method = 'svmExpoString'})
+
+For classification and regression using package \pkg{kernlab} with tuning parameters:
+\itemize{
+\item lambda (\code{lambda}, numeric)
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1191,7 +1466,7 @@ For classification using package \pkg{kernlab} with tuning parameters:
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Cost (\code{C})
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1199,9 +1474,9 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Polynomial Degree (\code{degree})
-\item Cost (\code{scale})
-\item Scale (\code{C})
+\item Polynomial Degree (\code{degree}, numeric)
+\item Scale (\code{scale}, numeric)
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1209,8 +1484,8 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Sigma (\code{sigma})
-\item Cost (\code{C})
+\item Sigma (\code{sigma}, numeric)
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1218,7 +1493,16 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For classification and regression using package \pkg{kernlab} with tuning parameters:
 \itemize{
-\item Cost (\code{C})
+\item Cost (\code{C}, numeric)
+}
+
+
+\strong{Support Vector Machines with Spectrum String Kernel} (\code{method = 'svmSpectrumString'})
+
+For classification and regression using package \pkg{kernlab} with tuning parameters:
+\itemize{
+\item length (\code{length}, numeric)
+\item Cost (\code{C}, numeric)
 }
 
 
@@ -1226,7 +1510,7 @@ For classification and regression using package \pkg{kernlab} with tuning parame
 
 For regression using package \pkg{elasticnet} with tuning parameters:
 \itemize{
-\item Fraction of Full Solution (\code{fraction})
+\item Fraction of Full Solution (\code{fraction}, numeric)
 }
 
 
@@ -1234,7 +1518,7 @@ For regression using package \pkg{elasticnet} with tuning parameters:
 
 For classification and regression using package \pkg{evtree} with tuning parameters:
 \itemize{
-\item Complexity Parameter (\code{alpha})
+\item Complexity Parameter (\code{alpha}, numeric)
 }
 
 
@@ -1242,8 +1526,8 @@ For classification and regression using package \pkg{evtree} with tuning paramet
 
 For classification and regression using package \pkg{nodeHarvest} with tuning parameters:
 \itemize{
-\item Maximum Interaction Depth (\code{maxinter})
-\item Prediction Mode (\code{mode})
+\item Maximum Interaction Depth (\code{maxinter}, numeric)
+\item Prediction Mode (\code{mode}, character)
 }
 
 
@@ -1251,7 +1535,24 @@ For classification and regression using package \pkg{nodeHarvest} with tuning pa
 
 For classification using package \pkg{vbmp} with tuning parameters:
 \itemize{
-\item Theta Estimated (\code{estimateTheta})
+\item Theta Estimated (\code{estimateTheta}, character)
+}
+
+
+\strong{Wang and Mendel Fuzzy Rules} (\code{method = 'WM'})
+
+For regression using package \pkg{frbs} with tuning parameters:
+\itemize{
+\item Number of Fuzzy Terms (\code{num.labels}, numeric)
+\item Membership Function (\code{type.mf}, character)
+}
+
+
+\strong{Weighted Subspace Random Forest} (\code{method = 'wsrf'})
+
+For classification using package \pkg{wsrf} with tuning parameters:
+\itemize{
+\item Number of Randomly Selected Predictors (\code{mtry}, numeric)
 }
 
 

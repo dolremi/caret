@@ -11,37 +11,36 @@ testing <- twoClassSim(500, linearVars = 2)
 trainX <- training[, -ncol(training)]
 trainY <- training$Class
 
-cctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all",
-                       classProbs = TRUE, 
-                       summaryFunction = twoClassSummary)
-cctrl2 <- trainControl(method = "LOOCV",
-                       classProbs = TRUE, summaryFunction = twoClassSummary)
+cctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all")
+cctrl2 <- trainControl(method = "LOOCV")
 cctrl3 <- trainControl(method = "none")
+cctrlR <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
 
 set.seed(849)
 test_class_cv_model <- train(trainX, trainY, 
                              method = "rpartCost", 
                              trControl = cctrl1,
-                             metric = "ROC", 
                              preProc = c("center", "scale"))
 
 set.seed(849)
 test_class_cv_form <- train(Class ~ ., data = training, 
                             method = "rpartCost", 
                             trControl = cctrl1,
-                            metric = "ROC", 
                             preProc = c("center", "scale"))
 
 test_class_pred <- predict(test_class_cv_model, testing[, -ncol(testing)])
-test_class_prob <- predict(test_class_cv_model, testing[, -ncol(testing)], type = "prob")
 test_class_pred_form <- predict(test_class_cv_form, testing[, -ncol(testing)])
-test_class_prob_form <- predict(test_class_cv_form, testing[, -ncol(testing)], type = "prob")
+
+set.seed(849)
+test_class_rand <- train(trainX, trainY, 
+                         method = "rpartCost", 
+                         trControl = cctrlR,
+                         tuneLength = 4)
 
 set.seed(849)
 test_class_loo_model <- train(trainX, trainY, 
                               method = "rpartCost", 
                               trControl = cctrl2,
-                              metric = "ROC", 
                               preProc = c("center", "scale"))
 
 set.seed(849)

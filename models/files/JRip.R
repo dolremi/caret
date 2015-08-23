@@ -5,7 +5,7 @@ modelInfo <- list(label = "Rule-Based Classifier",
                   parameters = data.frame(parameter = "NumOpt",
                                           class = "numeric",
                                           label = "# Optimizations"),
-                  grid = function(x, y, len = NULL) data.frame(NumOpt = 1:len),
+                  grid = function(x, y, len = NULL, search = "grid") data.frame(NumOpt = 1:len),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)
                     dat$.outcome <- y
@@ -33,6 +33,7 @@ modelInfo <- list(label = "Rule-Based Classifier",
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
                     predict(modelFit, newdata, type = "probability")
                   },
+                  levels = function(x) x$obsLevels,
                   predictors = function(x, ...) predictors(x$terms),
                   tags = c("Rule-Based Model", "Implicit Feature Selection"),
                   varImp = function(object, ...) {

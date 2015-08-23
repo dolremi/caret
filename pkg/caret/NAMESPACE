@@ -1,10 +1,24 @@
 useDynLib(caret)
 import(foreach, methods, plyr, reshape2, ggplot2, lattice, nlme, BradleyTerry2)
 importFrom(car, powerTransform, yjPower)
-importFrom(stats, prcomp, hclust)
-
+importFrom(grDevices, extendrange)
+importFrom(stats, .checkMFClasses, .getXlevels, aggregate, anova, 
+           approx, as.formula, binom.test, complete.cases, contrasts, 
+           cor, cov, delete.response, dist, 
+           fitted.values, loess, mahalanobis, 
+           mcnemar.test, median, model.frame, model.matrix, 
+           model.response, model.weights, na.fail, na.pass, optim, 
+           predict, qnorm, quantile, rbinom, reshape, resid, 
+           residuals, rnorm, runif, sd, t.test, terms, 
+           toeplitz, var, na.omit, p.adjust, fitted, prcomp, hclust,
+           lm, model.extract,  pt, update, binomial) 
+importFrom(stats4, coef) 
+importFrom(utils, capture.output, getFromNamespace, head, 
+           install.packages, installed.packages, object.size, flush.console, menu, stack)
 
 export(anovaScores,
+       as.data.frame.resamples,
+       as.matrix.resamples,       
        avNNet,
        avNNet.default,
        bag,
@@ -21,12 +35,15 @@ export(anovaScores,
        BoxCoxTrans,
        calibration,
        caretFuncs,
+       caretGA,
+       caretSA,
        caretSBF,
        caretTheme,
        cforestStats,
        checkConditionalX,
        checkInstall,
        checkResamples,
+       class2ind,
        classDist,
        classDist.default,
        cluster,
@@ -59,10 +76,21 @@ export(anovaScores,
        findCorrelation,
        findLinearCombos,
        flatTable,
+       gafs_initial,
+       gafs_lrSelection,
+       gafs_rwSelection,
+       gafs_tourSelection,
+       gafs_uCrossover,
+       gafs_spCrossover,
+       gafs_raMutation,
+       gafs,
+       gafs.default, 
+       gafsControl,
        gamFormula,
        gamFuncs,
        gamScores,
        getModelInfo,
+       getSamplingInfo,
        getTrainPerf,
        ggplot.rfe,
        ggplot.train,
@@ -71,6 +99,7 @@ export(anovaScores,
        icr,
        icr.default,
        icr.formula,
+       index2vec,
        ipredStats,
        knn3,
        knn3.formula,
@@ -94,6 +123,7 @@ export(anovaScores,
        maxDissim,
        MeanSD,
        minDiss,
+       mnLogLoss,
        modelCor,
        modelLookup,
        nbBag,
@@ -118,6 +148,7 @@ export(anovaScores,
        pickSizeBest,
        pickSizeTolerance,
        pickVars,
+       plot.gafs,
        plot.rfe,
        plot.train,
        plotClassProbs,
@@ -135,6 +166,7 @@ export(anovaScores,
        predict.bagFDA,
        predict.classDist,
        predict.dummyVars,
+       predict.gafs,
        predict.icr,
        predict.knn3,
        predict.knnreg,
@@ -163,9 +195,17 @@ export(anovaScores,
        rfeControl,
        rfeIter,
        rfFuncs,
+       rfGA, 
+       rfSA,
        rfSBF,
        rfStats,
        RMSE,
+       safs_initial,
+       safs_perturb, 
+       safs_prob,
+       safs,
+       safs.default, 
+       safsControl,
        sbf,
        sbf.default,
        sbf.formula,
@@ -197,10 +237,13 @@ export(anovaScores,
        train.formula,
        trainControl,
        treebagFuncs,
+       treebagGA,
+       treebagSA,
        treebagSBF,
        twoClassSim,
        twoClassSummary,
        upSample,
+       var_seq,
        varImp,
        varImp.bagEarth,
        varImp.bagFDA,
@@ -217,7 +260,9 @@ S3method(train,           default)
 S3method(plsda,           default)
 S3method(splsda,          default)
 S3method(bagEarth,        default)
+S3method(bagEarth,        formula)
 S3method(bagFDA,          default)
+S3method(bagFDA,          formula)
 S3method(preProcess,      default)
 S3method(pcaNNet,         default)
 S3method(avNNet,          default)
@@ -228,6 +273,9 @@ S3method(negPredValue,    default)
 S3method(rfe,             default)
 S3method(classDist,       default)
 S3method(knnreg,          default)
+S3method(knnreg,          matrix)
+S3method(knnreg,          data.frame)
+S3method(knnreg,          formula)
 S3method(sbf,             default)
 S3method(nullModel,       default)
 S3method(resamples,       default)
@@ -244,7 +292,6 @@ S3method(train,       formula)
 S3method(pcaNNet,     formula)
 S3method(avNNet,      formula)
 S3method(rfe,         formula)
-S3method(knnreg,      formula)
 S3method(sbf,         formula)
 S3method(icr,         formula)
 
@@ -276,6 +323,8 @@ S3method(varImp, C5.0)
 S3method(varImp, nnet)
 S3method(varImp, glmnet)
 S3method(varImp, gam)
+S3method(varImp, gafs)
+S3method(varImp, safs) 
 
 S3method(densityplot, train)
 S3method(histogram,   train)
@@ -312,6 +361,8 @@ S3method(plot,  rfe)
 S3method(plot,  prcomp.resamples)
 S3method(plot,  lift)
 S3method(plot,  calibration)
+S3method(plot,  gafs)
+S3method(plot,  safs) 
 
 S3method(confusionMatrix,  train)
 S3method(confusionMatrix,  rfe)
@@ -351,6 +402,8 @@ S3method(print, BoxCoxTrans)
 S3method(print, lift)
 S3method(print, calibration)
 S3method(print, expoTrans)
+S3method(print, gafs)
+S3method(print, safs) 
 
 S3method(predict, plsda)
 S3method(predict, splsda)
@@ -372,6 +425,8 @@ S3method(predict, rfe)
 S3method(predict, dummyVars)
 S3method(predict, BoxCoxTrans)
 S3method(predict, expoTrans)
+S3method(predict, gafs)
+S3method(predict, safs) 
 
 S3method(summary, bagEarth)
 S3method(summary, bagFDA)
@@ -388,6 +443,8 @@ S3method(predictors, list)
 S3method(predictors, default)
 S3method(predictors, rfe)
 S3method(predictors, sbf)
+S3method(predictors, gafs)
+S3method(predictors, safs) 
 
 S3method(confusionMatrix, table)
 
@@ -402,6 +459,9 @@ S3method(negPredValue,    matrix)
 
 S3method(as.table,  confusionMatrix)
 S3method(as.matrix, confusionMatrix)
+S3method(as.matrix, resamples)
+
+S3method(as.data.frame, resamples)
 
 S3method(summary, resamples)
 S3method(summary, bag)
@@ -413,6 +473,8 @@ S3method(summary, diff.resamples)
 
 S3method(update, train)
 S3method(update, rfe)
+S3method(update, gafs)
+S3method(update, safs) 
 
 S3method(fitted, train)
 S3method(residuals, train)
@@ -427,4 +489,15 @@ S3method(oob_pred, rfe)
 S3method(oob_pred, sbf)
 S3method(oob_pred, list)
 
+S3method(gafs, default)
+S3method(safs, default) 
+
+S3method(trim, train)
+
+S3method(spatialSign, matrix)
+S3method(spatialSign, data.frame)
+
+S3method(knn3, matrix)
+S3method(knn3, data.frame)
+S3method(knn3, formula)
 

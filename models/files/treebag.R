@@ -5,7 +5,7 @@ modelInfo <- list(label = "Bagged CART",
                   parameters = data.frame(parameter = "parameter",
                                           class = "character",
                                           label = "parameter"),
-                  grid = function(x, y, len = NULL) data.frame(parameter = "none"),
+                  grid = function(x, y, len = NULL, search = "grid") data.frame(parameter = "none"),
                   fit = function(x, y, wts, param, lev, last,classProbs, ...) {
                     theDots <- list(...)
                     if(!any(names(theDots) == "keepX")) theDots$keepX <- FALSE   
@@ -37,6 +37,22 @@ modelInfo <- list(label = "Bagged CART",
                     out <- data.frame(Overall = meanImp$Overall)
                     rownames(out) <- meanImp$variable
                     out
+                  },
+                  trim = function(x) {
+                    trim_rpart <- function(x) {
+                      x$call <- list(na.action = (x$call)$na.action)
+                      x$x <- NULL
+                      x$y <- NULL
+                      x$where <- NULL
+                      x
+                    }
+                    x$mtrees <- lapply(x$mtrees, 
+                                       function(x){
+                                         x$bindx <- NULL
+                                         x$btree <- trim_rpart(x$btree)
+                                         x
+                                       } )
+                    x
                   },
                   tags = c("Tree-Based Model", "Ensemble Model", "Bagging"), 
                   levels = function(x) levels(x$y),

@@ -5,19 +5,31 @@ modelInfo <- list(label = "Generalized Additive Model using LOESS",
                   parameters = data.frame(parameter = c('span', 'degree'),
                                           class = c('numeric', 'numeric'),
                                           label = c('Span', 'Degree')),
-                  grid = function(x, y, len = NULL) 
-                    expand.grid(span = .5, degree = 1),
+                  grid = function(x, y, len = NULL, search = "grid") {
+                    if(search == "grid") {
+                      out <- expand.grid(span = .5, degree = 1)
+                    } else {
+                      out <- data.frame(span = runif(len, min = 0, max = 1),
+                                        degree = sample(1:2, size = len, replace = TRUE))
+                    }
+                    out
+                  },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
-                    dat <- if(is.data.frame(x)) x else as.data.frame(x)
-                    dat$.outcome <- y
+                    args <- list(data = if(is.data.frame(x)) x else as.data.frame(x))
+                    args$data$.outcome <- y
+                    args$formula <- caret:::smootherFormula(x,
+                                                            smoother = "lo",
+                                                            span = param$span,
+                                                            degree = param$degree)
+                    theDots <- list(...)
                     
-                    gam:::gam(caret:::smootherFormula(x,
-                                              smoother = "lo",
-                                              span = param$span,
-                                              degree = param$degree),
-                              data = dat,
-                              family =  if(is.factor(y)) binomial() else  gaussian(),
-                              ...)
+                    
+                    if(!any(names(theDots) == "family")) 
+                      args$family <- if(is.factor(y)) binomial else gaussian
+                    
+                    if(length(theDots) > 0) args <- c(args, theDots)
+                    
+                    do.call(getFromNamespace("gam", "gam"), args)
                   },
                   predict = function(modelFit, newdata, submodels = NULL) {
                     if(!is.data.frame(newdata)) newdata <- as.data.frame(newdata)
@@ -76,5 +88,6 @@ modelInfo <- list(label = "Generalized Additive Model using LOESS",
                     }
                     gams
                   },
+                  levels = function(x) x$obsLevels,
                   tags = c("Generalized Linear Model", "Generalized Additive Model"),
                   sort = function(x) x)

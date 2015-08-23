@@ -5,18 +5,15 @@ modelInfo <- list(label = "Conditional Inference Random Forest",
                   parameters = data.frame(parameter = 'mtry',
                                           class = 'numeric',
                                           label = "#Randomly Selected Predictors"),
-                  grid = function(x, y, len = NULL) {
-                    p <- ncol(x) 
-                    tuneSeq <- if(p <= len) floor(seq(2, to = p, length = p))
-                    else  seq(from = 2, by = 2, length.out = len)
-                    if(any(table(tuneSeq) > 1))
-                    {
-                      tuneSeq <- unique(tuneSeq)
-                      cat("note: only", length(tuneSeq), 
-                          "unique complexity parameters in default grid.",
-                          "Truncating the grid to", length(tuneSeq), ".\n\n")      
+                  grid = function(x, y, len = NULL, search = "grid"){
+                    if(search == "grid") {
+                      out <- data.frame(mtry = caret::var_seq(p = ncol(x), 
+                                                              classification = is.factor(y), 
+                                                              len = len))
+                    } else {
+                      out <- data.frame(mtry = unique(sample(1:ncol(x), replace = TRUE, size = len)))
                     }
-                    data.frame(mtry = tuneSeq)
+                    out
                   },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     dat <- if(is.data.frame(x)) x else as.data.frame(x)

@@ -5,8 +5,14 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                   parameters = data.frame(parameter = c('df'),
                                           class = c('numeric'),
                                           label = c('Degrees of Freedom')),
-                  grid = function(x, y, len = NULL) 
-                    expand.grid(df = seq(1, 3, length = len)),
+                  grid = function(x, y, len = NULL, search = "grid") {
+                    if(search == "grid") {
+                      out <- expand.grid(df = seq(1, 3, length = len))
+                    } else {
+                      out <- data.frame(df = runif(len, min = 0, max = 5))
+                    }
+                    out
+                  },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) {
                     args <- list(data = if(is.data.frame(x)) x else as.data.frame(x))
                     args$data$.outcome <- y
@@ -14,9 +20,12 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                     args$formula <- caret:::smootherFormula(x,
                                                             smoother = "s",
                                                             df = param$df)
-                    args$family <- if(is.factor(y)) binomial else gaussian
-
                     theDots <- list(...)
+                    
+                    
+                    if(!any(names(theDots) == "family")) 
+                      args$family <- if(is.factor(y)) binomial else gaussian
+                    
                     if(length(theDots) > 0) args <- c(args, theDots)
                     
                     do.call(getFromNamespace("gam", "gam"), args)
@@ -42,6 +51,7 @@ modelInfo <- list(label = "Generalized Additive Model using Splines",
                     colnames(out) <-  modelFit$obsLevels
                     out
                   },
+                  levels = function(x) x$obsLevels,
                   predictors = function(x, ...) {
                     getNames <- function(x) {
                       x <- strsplit(x, "(\\()|(,)|(\\))")

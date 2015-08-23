@@ -2,6 +2,7 @@ trainControl <- function(method = "boot",
                          number = ifelse(grepl("cv", method), 10, 25),
                          repeats = ifelse(grepl("cv", method), 1, number),
                          p = .75,
+                         search = "grid",
                          initialWindow = NULL,
                          horizon = 1,
                          fixedWindow = TRUE,
@@ -13,12 +14,14 @@ trainControl <- function(method = "boot",
                          summaryFunction = defaultSummary,
                          selectionFunction = "best",
                          preProcOptions = list(thresh = 0.95, ICAcomp = 3, k = 5),
+                         sampling = NULL,
                          index = NULL,
                          indexOut = NULL,
                          timingSamps = 0,
                          predictionBounds = rep(FALSE, 2),
                          seeds = NA,
                          adaptive = list(min = 5, alpha = 0.05, method = "gls", complete = TRUE),
+                         trim = FALSE,
                          allowParallel = TRUE)
 {
   if(is.null(selectionFunction)) stop("null selectionFunction values not allowed")
@@ -34,10 +37,13 @@ trainControl <- function(method = "boot",
     if(adaptive$min >= num) stop(paste("adaptive$min should be less than", num))
     if(adaptive$min <= 1) stop("adaptive$min should be greater than 1")
   }
+  if(!(search %in% c("grid", "random")))
+    stop("`search` should be either 'grid' or 'random'")
   
   list(method = method,
        number = number,
        repeats = repeats,
+       search = search,
        p = p,
        initialWindow = initialWindow,
        horizon = horizon,
@@ -50,12 +56,14 @@ trainControl <- function(method = "boot",
        summaryFunction = summaryFunction,
        selectionFunction = selectionFunction,
        preProcOptions = preProcOptions,
+       sampling = sampling,
        index = index,
        indexOut = indexOut,
        timingSamps = timingSamps,
        predictionBounds = predictionBounds,
        seeds = seeds,
        adaptive = adaptive,
+       trim = trim,
        allowParallel = allowParallel)
 }
 

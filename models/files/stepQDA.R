@@ -5,7 +5,7 @@ modelInfo <- list(label = "Quadratic Discriminant Analysis with Stepwise Feature
                   parameters = data.frame(parameter = c("maxvar", "direction"),
                                           class = c("numeric", "character"),
                                           label = c('Maximum #Variables', 'Search Direction')),
-                  grid = function(x, y, len = NULL) 
+                  grid = function(x, y, len = NULL, search = "grid") 
                     data.frame(maxvar = Inf, direction = "both"),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...){
                     out <- stepclass(x, y,
@@ -29,5 +29,6 @@ modelInfo <- list(label = "Quadratic Discriminant Analysis with Stepwise Feature
                     form[[2]] <- NULL
                     all.vars(form)
                   },
+                  levels = function(x) x$obsLevels,
                   tags = c("Discriminant Analysis", "Feature Selection Wrapper", "Polynomial Model"),
                   sort = function(x) x)

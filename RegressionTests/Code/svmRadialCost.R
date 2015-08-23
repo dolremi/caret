@@ -11,10 +11,14 @@ testing <- twoClassSim(500, linearVars = 2)
 trainX <- training[, -ncol(training)]
 trainY <- training$Class
 
-cctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all")
-cctrl2 <- trainControl(method = "LOOCV")
+seeds <- vector(mode = "list", length = nrow(training) + 1)
+seeds <- lapply(seeds, function(x) 1:20)
+
+cctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all", seeds = seeds)
+cctrl2 <- trainControl(method = "LOOCV", seeds = seeds)
 cctrl3 <- trainControl(method = "none",
-                       classProbs = TRUE, summaryFunction = twoClassSummary)
+                       classProbs = TRUE, summaryFunction = twoClassSummary, seeds = seeds)
+cctrlR <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
 
 set.seed(849)
 test_class_cv_model <- train(trainX, trainY, 
@@ -30,6 +34,13 @@ test_class_cv_form <- train(Class ~ ., data = training,
 
 test_class_pred <- predict(test_class_cv_model, testing[, -ncol(testing)])
 test_class_pred_form <- predict(test_class_cv_form, testing[, -ncol(testing)])
+
+set.seed(849)
+test_class_rand <- train(trainX, trainY, 
+                         method = "svmRadialCost", 
+                         trControl = cctrlR,
+                         tuneLength = 4,
+                         preProc = c("center", "scale"))
 
 set.seed(849)
 test_class_loo_model <- train(trainX, trainY, 
@@ -76,9 +87,10 @@ trainY <- training$y
 testX <- trainX[, -ncol(training)]
 testY <- trainX$y 
 
-rctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all")
-rctrl2 <- trainControl(method = "LOOCV")
-rctrl3 <- trainControl(method = "none")
+rctrl1 <- trainControl(method = "cv", number = 3, returnResamp = "all", seeds = seeds)
+rctrl2 <- trainControl(method = "LOOCV", seeds = seeds)
+rctrl3 <- trainControl(method = "none", seeds = seeds)
+rctrlR <- trainControl(method = "cv", number = 3, returnResamp = "all", search = "random")
 
 set.seed(849)
 test_reg_cv_model <- train(trainX, trainY, 
@@ -93,6 +105,13 @@ test_reg_cv_form <- train(y ~ ., data = training,
                           trControl = rctrl1,
                           preProc = c("center", "scale"))
 test_reg_pred_form <- predict(test_reg_cv_form, testX)
+
+set.seed(849)
+test_reg_rand <- train(trainX, trainY, 
+                       method = "svmRadialCost", 
+                       trControl = rctrlR,
+                       tuneLength = 4,
+                       preProc = c("center", "scale"))
 
 set.seed(849)
 test_reg_loo_model <- train(trainX, trainY, 

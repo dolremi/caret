@@ -5,7 +5,7 @@ modelInfo <- list(label = "Single C5.0 Ruleset",
                   parameters = data.frame(parameter = c('parameter'),
                                           class = c("character"),
                                           label = c('none')),
-                  grid = function(x, y, len = NULL) data.frame(parameter = "none"),
+                  grid = function(x, y, len = NULL, search = "grid") data.frame(parameter = "none"),
                   fit = function(x, y, wts, param, lev, last, classProbs, ...) 
                     C5.0(x = x, y = y, weights = wts, rules = TRUE, ...),
                   predict = function(modelFit, newdata, submodels = NULL) 
@@ -16,6 +16,14 @@ modelInfo <- list(label = "Single C5.0 Ruleset",
                     vars <- C5imp(x, metric = "splits")
                     rownames(vars)[vars$Overall > 0]
                   },
+                  levels = function(x) x$obsLevels,
                   varImp = function(object, ...) C5imp(object, ...),
                   tags = c("Rule-Based Model", "Implicit Feature Selection"),
+                  trim = function(x) {
+                    x$boostResults <- NULL
+                    x$size <- NULL
+                    x$call <- NULL
+                    x$output <- NULL
+                    x
+                  },
                   sort = function(x) x[order(x[,1]),])

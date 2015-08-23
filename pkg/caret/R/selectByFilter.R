@@ -358,7 +358,7 @@ anovaScores <- function(x, y)
 
 gamScores <- function(x, y)
 {
-  requireNamespace("gam", quietly = TRUE)
+  requireNamespaceQuietStop("gam")
   pv <- try(anova(gam::gam(y ~ s(x)), test = "F")[2, "Pr(F)"], silent = TRUE)
   if(any(class(pv) == "try-error")) pv <- try(anova(lm(x ~ y), test = "F")[1, "Pr(>F)"], silent = TRUE)
   if(any(class(pv) == "try-error") || is.na(pv) || is.nan(pv)) pv <- 1
@@ -407,8 +407,8 @@ rfSBF <- list(summary = defaultSummary,
               {
                 if(ncol(x) > 0)
                 {
-                  library(randomForest)
-                  randomForest(x, y, ...)
+                  loadNamespace("randomForest")
+                  randomForest::randomForest(x, y, ...)
                 } else nullModel(y = y)
               },
               pred = function(object, x)
@@ -466,8 +466,8 @@ ldaSBF <- list(summary = defaultSummary,
                {
                  if(ncol(x) > 0)
                  {
-                   library(MASS)
-                   lda(x, y, ...)
+                   loadNamespace("MASS")
+                   MASS::lda(x, y, ...)
                  } else nullModel(y = y)
                },
                pred = function(object, x)
@@ -500,8 +500,8 @@ nbSBF <- list(summary = defaultSummary,
               {
                 if(ncol(x) > 0)
                 {
-                  library(klaR)
-                  NaiveBayes(x, y, usekernel = TRUE, fL = 2, ...)
+                  loadNamespace("klaR")
+                  klaR::NaiveBayes(x, y, usekernel = TRUE, fL = 2, ...)
                   
                 } else nullModel(y = y)
               },
@@ -542,8 +542,8 @@ treebagSBF <- list(summary = defaultSummary,
                    {
                      if(ncol(x) > 0)
                      {
-                       library(ipred)
-                       ipredbagg(y, x, ...)
+                       loadNamespace("ipred")
+                       ipred::ipredbagg(y, x, ...)
                      } else nullModel(y = y)
                    },
                    

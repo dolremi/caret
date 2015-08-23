@@ -5,7 +5,15 @@ modelInfo <- list(label = "Bagged Logic Regression",
                   parameters = data.frame(parameter = c('nleaves', 'ntrees'),
                                           class = c('numeric', 'numeric'),
                                           label = c('Maximum Number of Leaves', 'Number of Trees')),
-                  grid = function(x, y, len = NULL) expand.grid(ntrees = (1:len) + 1, nleaves = 2^((1:len) + 6)),
+                  grid = function(x, y, len = NULL, search = "grid"){
+                    if(search == "grid") {
+                      out <- expand.grid(ntrees = (1:len) + 1, nleaves = 2^((1:len) + 6))
+                    } else {
+                      out <- data.frame(ntrees = sample(1:10, size = len, replace = TRUE),
+                                        nleaves = sample(1:10, size = len, replace = TRUE))
+                    }
+                    out
+                  },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...){
                     logic.bagging(as.matrix(x), y,
                                   ntrees = param$ntrees,
@@ -42,6 +50,7 @@ modelInfo <- list(label = "Bagged Logic Regression",
                     varNums <- varNums[varNums > 0]
                     if(length(varNums) > 0) colnames(x$data)[varNums] else NA    
                   },
+                  levels = function(x) x$obsLevels,
                   tags = c("Logic Regression", "Linear Classifier", "Linear Regression", "Logistic Regression",
                            "Bagging", "Ensemble Model"),
                   sort = function(x) x[order(x$ntrees, x$nleaves),])

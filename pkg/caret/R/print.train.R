@@ -16,7 +16,7 @@ stringFunc <- function (x)  {
            details = FALSE,
            selectCol = FALSE,
            ...) {
-  
+    
     if(!is.null(x$modelInfo$label)) cat(x$modelInfo$label, "\n\n")
     if(printCall) printCall(x$call)
     
@@ -70,19 +70,35 @@ stringFunc <- function (x)  {
       
       resampText <- resampName(x)
       
-      cat("Resampling:", resampText, "\n\n")   
+      cat("Resampling:", resampText, "\n")   
       if(x$control$method != "none") {
         outLabel <- x$metric
         
         resampleN <- as.character(resampleN)
         if(numResamp > 5) resampleN <- c(resampleN[1:6], "...")
-        cat("Summary of sample sizes:", paste(resampleN, collapse = ", "), "\n\n")
+        cat("Summary of sample sizes:", paste(resampleN, collapse = ", "), "\n")
       }
+    }
+    if(!is.null(x$control$sampling)) {
+      cat("Addtional sampling using ")
+      cat(switch(x$control$sampling$name,
+                 down = "down-sampling",
+                 up = "up-sampling",
+                 smote = "SMOTE",
+                 rose = "ROSE",
+                 custom = "a custom function"))
+      if(!is.null(x$preProc)) {
+        if(x$control$sampling$first)
+          cat(" prior to pre-processing") else 
+            cat(" after to pre-processing")
+      }
+      cat("\n\n")
     }
     
     if(x$control$method != "none") {
       
       tuneAcc <- x$results 
+     
       tuneAcc <- tuneAcc[, names(tuneAcc) != "parameter"]
       
       cat("Resampling results")
@@ -90,6 +106,7 @@ stringFunc <- function (x)  {
       cat("\n")
       
       if(dim(tuneAcc)[1] > 1) {
+        
         numParam <- length(x$bestTune)
         
         finalTune <- x$bestTune
@@ -137,9 +154,19 @@ stringFunc <- function (x)  {
           
         } else constString <- NULL
       } else constString <- NULL
+
+      tuneAcc <- tuneAcc[,!grepl("Apparent$", names(tuneAcc)),drop = FALSE]
+      nms <- names(tuneAcc)[names(tuneAcc) %in% params]
+      sort_args <- vector(mode = "list", length = length(nms))
+      for(i in seq(along = nms)) {
+        sort_args[[i]] <- tuneAcc[, nms[i]]
+      }
+      tune_ord <- do.call("order", sort_args)
+      tuneAcc <- tuneAcc[tune_ord,,drop = FALSE]
+      
       theDots <- list(...)
       theDots$x <- tuneAcc
-      if(!(any(names(theDots) == "digits"))) theDots$digits <- min(3, getOption("digits") - 3)
+      #       if(!(any(names(theDots) == "digits"))) theDots$digits <- min(3, getOption("digits"))
       printMat <- do.call("format.data.frame", theDots)
       printMat <- as.matrix(printMat)
       rownames(printMat) <- rep("", dim(printMat)[1])

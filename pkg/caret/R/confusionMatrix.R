@@ -13,12 +13,28 @@ confusionMatrix.default <- function(data, reference,
   if(!is.factor(reference)) reference <- factor(reference)
   if(!is.character(positive) & !is.null(positive)) stop("positive argument must be character")
   
-  if(length(levels(data)) != length(levels(reference)))
-    stop("the data and reference factors must have the same number of levels")
+  if(length(levels(data)) > length(levels(reference)))
+    stop("the data cannot have more levels than the reference")
   
-  if(any(levels(data) != levels(reference)))
-    stop("the data and reference values must have exactly the same levels")
+  if(!any(levels(data) %in% levels(reference))){
+    stop("The data must contain some levels that overlap the reference.")
+  } 
   
+  if(!all(levels(data) %in% levels(reference))){
+    badLevel <- levels(data)[!levels(data) %in% levels(reference)]
+    if(sum(table(data)[badLevel]) > 0){
+      stop("The data contain levels not found in the data.")
+    } else{
+      warning("The data contains levels not found in the data, but they are empty and will be dropped.")
+      data <- factor(as.character(data))
+    }
+  }
+  
+  if(any(levels(reference) != levels(data))) {
+    warning("Levels are not in the same order for reference and data. Refactoring data to match.")
+    data <- as.character(data)
+    data <- factor(data, levels = levels(reference))
+  }
   classLevels <- levels(data)
   numLevels <- length(classLevels)
   if(numLevels < 2) 
@@ -33,7 +49,7 @@ confusionMatrix.default <- function(data, reference,
 
 confusionMatrix.table <- function(data, positive = NULL, prevalence = NULL, ...)
 {
-  requireNamespace("e1071", quietly = TRUE)
+  requireNamespaceQuietStop("e1071")
   
   if(length(dim(data)) != 2) stop("the table must have two dimensions")
   if(!all.equal(nrow(data), ncol(data))) stop("the table must nrow = ncol")
@@ -257,6 +273,7 @@ resampName <- function(x, numbers = TRUE)
     numResamp <- length(resampleN)
     out <- switch(tolower(x$control$method),
                   none = "None",
+                  custom = paste("Custom Resampling (", numResamp, " reps)", sep = ""),
                   timeslice = paste("Rolling Forecasting Origin Resampling (",
                                     x$control$horizon, " held-out with",
                                     ifelse(x$control$fixedWindow, " a ", " no "),
@@ -278,6 +295,7 @@ resampName <- function(x, numbers = TRUE)
   } else {
     out <- switch(tolower(x$control$method),
                   none = "None", 
+                  custom = "Custom Resampling",
                   timeslice = "Rolling Forecasting Origin Resampling",
                   oob = "Out of Bag Resampling",
                   boot = "(Bootstrap)",

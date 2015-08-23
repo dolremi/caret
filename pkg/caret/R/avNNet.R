@@ -10,13 +10,6 @@ avNNet.formula <- function (formula, data, weights, ...,
                             allowParallel = TRUE,
                             subset, na.action, contrasts = NULL) 
 {
-  class.ind <- function(cl) {
-    n <- length(cl)
-    x <- matrix(0, n, length(levels(cl)))
-    x[(1:n) + n * (as.vector(unclass(cl)) - 1)] <- 1
-    dimnames(x) <- list(names(cl), levels(cl))
-    x
-  }
   m <- match.call(expand.dots = FALSE)
   if (is.matrix(eval.parent(m$data))) 
     m$data <- as.data.frame(data)
@@ -44,7 +37,6 @@ avNNet.formula <- function (formula, data, weights, ...,
                         ...)
   res$terms <- Terms
   res$coefnames <- colnames(x)
-  res$call <- match.call()
   res$na.action <- attr(m, "na.action")
   res$contrasts <- cons
   res$xlevels <- .getXlevels(Terms, m)
@@ -54,29 +46,22 @@ avNNet.formula <- function (formula, data, weights, ...,
 
 avNNet.default <- function(x, y, repeats = 5, bag = FALSE, allowParallel = TRUE, ...)
   {
-    requireNamespace("nnet", quietly = TRUE)
+    requireNamespaceQuietStop("nnet")
     ## check for factors
     ## this is from nnet.formula
-    class.ind <- function(cl) {
-      n <- length(cl)
-      x <- matrix(0, n, length(levels(cl)))
-      x[(1:n) + n * (as.vector(unclass(cl)) - 1)] <- 1
-      dimnames(x) <- list(names(cl), levels(cl))
-      x
-    }
 
     ind <- seq(along = y)
     if(is.factor(y))
       {
         classLev <- levels(y)
-        y <- class.ind(y)
+        y <- class2ind(y)
       } else classLev <- NULL
 
     if(is.matrix(y)) classLev <- colnames(y)
     
     theDots <- list(...)
 
-    ## to avoid a "no visible binding for global variable ‘i’" warning:
+    ## to avoid a "no visible binding for global variable 'i'" warning:
     i <- NULL
     `%op%` <-  if(allowParallel)  `%dopar%` else  `%do%`
      mods <- foreach(i = 1:repeats,
@@ -88,7 +73,7 @@ avNNet.default <- function(x, y, repeats = 5, bag = FALSE, allowParallel = TRUE,
         {
           if(theDots$trace) cat("\nFitting Repeat", i, "\n\n")
         } else cat("Fitting Repeat", i, "\n\n")
-      if(bag)  ind <- sample(1:nrow(x))
+      if(bag)  ind <- sample(1:nrow(x), replace = TRUE)
       thisMod <- if(is.null(classLev)) nnet::nnet(x[ind,,drop = FALSE], y[ind], ...) else nnet::nnet(x[ind,,drop = FALSE], y[ind,], ...)
       thisMod$lev <- classLev
       thisMod
@@ -113,7 +98,7 @@ print.avNNet <- function (x, ...)
 
 predict.avNNet <- function(object, newdata, type = c("raw", "class", "prob"), ...)
   {
-    library(nnet)
+    loadNamespace("nnet")
     if (!inherits(object, "avNNet")) 
       stop("object not of class \"avNNet\"")
     if (missing(newdata))

@@ -5,8 +5,16 @@ modelInfo <- list(label = "Penalized Logistic Regression",
                   parameters = data.frame(parameter = c('lambda', 'cp'),
                                           class = c('numeric', 'character'),
                                           label = c('L2 Penalty', 'Complexity Parameter')),
-                  grid = function(x, y, len = NULL) expand.grid(cp = "bic", 
-                                                                lambda = c(0, 10 ^ seq(-1, -4, length = len - 1))),
+                  grid = function(x, y, len = NULL, search = "grid"){
+                    if(search == "grid") {
+                      out <-  expand.grid(cp = "bic", 
+                                          lambda = c(0, 10 ^ seq(-1, -4, length = len - 1)))
+                    } else {
+                      out <- data.frame(cp = sample(c("aic", "bic"), size = len, replace = TRUE), 
+                                        lambda = 10^runif(len, min = -5, 1))
+                    }
+                    out
+                  },
                   fit = function(x, y, wts, param, lev, last, classProbs, ...){
                     y <- ifelse(y == levels(y)[1], 1, 0)
                     plr(x, y,
@@ -26,5 +34,6 @@ modelInfo <- list(label = "Penalized Logistic Regression",
                     dimnames(out)[[2]] <-  modelFit$obsLevels
                     out
                   },
+                  levels = function(x) x$obsLevels,
                   tags = c("L2 Regularization", "Logistic Regression", "Linear Classifier"),
                   sort = function(x) x[order(-x$lambda),])
